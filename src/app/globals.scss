@@ -1,0 +1,60 @@
+*,
+*::before,
+*::after {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+    display: block;
+    max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+    font: inherit;
+}
+
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    overflow-wrap: break-word;
+}
+
+#root,
+#__next {
+    isolation: isolate;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.button {
+    border-radius: 8px;
+    color: white;
+    background-color: darkorchid;
+    text-align: center;
+
+    padding: 10px 20px;
+
+    box-shadow: inset 0 0 0px 2px darkorchid;
+    font-weight: 700;
+
+}

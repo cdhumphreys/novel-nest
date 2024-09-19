@@ -1,0 +1,14 @@
+services:
+  novel-nest-db:
+    image: postgres
+    restart: always
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: example
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+
+volumes:
+  postgres:
