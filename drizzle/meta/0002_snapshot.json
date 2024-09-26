@@ -1,6 +1,6 @@
 {
-  "id": "d8134a32-3614-4014-87b9-bf60b0a587f2",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "750ad78c-9532-402c-bd99-7444bd85006d",
+  "prevId": "8d129259-e30d-4576-ba08-6090364175df",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -202,7 +202,7 @@
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true
         },
@@ -215,6 +215,12 @@
         "published": {
           "name": "published",
           "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "publisher_id": {
+          "name": "publisher_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -233,6 +239,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "nn_books_publisher_id_nn_publishers_id_fk": {
+          "name": "nn_books_publisher_id_nn_publishers_id_fk",
+          "tableFrom": "nn_books",
+          "tableTo": "nn_publishers",
+          "columnsFrom": [
+            "publisher_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
         "nn_books_userId_nn_users_id_fk": {
           "name": "nn_books_userId_nn_users_id_fk",
           "tableFrom": "nn_books",
@@ -342,7 +361,7 @@
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true
         }

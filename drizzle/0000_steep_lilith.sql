@@ -32,17 +32,7 @@ CREATE TABLE IF NOT EXISTS "nn_books" (
 	"description" text NOT NULL,
 	"published" timestamp,
 	"num_pages" integer,
-	"language" text,
-	"userId" text NOT NULL,
-	"publisher_id" integer,
-	"work_id" integer NOT NULL
-);
---> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "nn_comments" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"userId" text NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL,
-	"updated_at" timestamp
+	"userId" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "nn_profiles" (
@@ -51,18 +41,23 @@ CREATE TABLE IF NOT EXISTS "nn_profiles" (
 	"joined_date" timestamp,
 	"date_of_birth" timestamp,
 	"date_of_death" timestamp,
-	"username" text,
+	"username" text NOT NULL,
 	"bio" text,
-	"location" text,
-	"website" text,
 	"userId" text NOT NULL,
 	CONSTRAINT "nn_profiles_username_unique" UNIQUE("username")
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "nn_publishers" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"name" text NOT NULL,
-	"established" timestamp
+	"name" text NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE IF NOT EXISTS "nn_review_comments" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"userId" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp,
+	"review_id" integer NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "nn_reviews" (
@@ -96,10 +91,6 @@ CREATE TABLE IF NOT EXISTS "nn_verificationTokens" (
 	CONSTRAINT "nn_verificationTokens_identifier_token_pk" PRIMARY KEY("identifier","token")
 );
 --> statement-breakpoint
-CREATE TABLE IF NOT EXISTS "nn_works" (
-	"id" serial PRIMARY KEY NOT NULL
-);
---> statement-breakpoint
 DO $$ BEGIN
  ALTER TABLE "nn_accounts" ADD CONSTRAINT "nn_accounts_userId_nn_users_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."nn_users"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
@@ -119,25 +110,19 @@ EXCEPTION
 END $$;
 --> statement-breakpoint
 DO $$ BEGIN
- ALTER TABLE "nn_books" ADD CONSTRAINT "nn_books_publisher_id_nn_publishers_id_fk" FOREIGN KEY ("publisher_id") REFERENCES "public"."nn_publishers"("id") ON DELETE set null ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "nn_books" ADD CONSTRAINT "nn_books_work_id_nn_works_id_fk" FOREIGN KEY ("work_id") REFERENCES "public"."nn_works"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
- ALTER TABLE "nn_comments" ADD CONSTRAINT "nn_comments_userId_nn_users_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."nn_users"("id") ON DELETE cascade ON UPDATE no action;
-EXCEPTION
- WHEN duplicate_object THEN null;
-END $$;
---> statement-breakpoint
-DO $$ BEGIN
  ALTER TABLE "nn_profiles" ADD CONSTRAINT "nn_profiles_userId_nn_users_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."nn_users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "nn_review_comments" ADD CONSTRAINT "nn_review_comments_userId_nn_users_id_fk" FOREIGN KEY ("userId") REFERENCES "public"."nn_users"("id") ON DELETE cascade ON UPDATE no action;
+EXCEPTION
+ WHEN duplicate_object THEN null;
+END $$;
+--> statement-breakpoint
+DO $$ BEGIN
+ ALTER TABLE "nn_review_comments" ADD CONSTRAINT "nn_review_comments_review_id_nn_reviews_id_fk" FOREIGN KEY ("review_id") REFERENCES "public"."nn_reviews"("id") ON DELETE cascade ON UPDATE no action;
 EXCEPTION
  WHEN duplicate_object THEN null;
 END $$;

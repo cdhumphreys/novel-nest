@@ -1,6 +1,6 @@
 {
-  "id": "d8134a32-3614-4014-87b9-bf60b0a587f2",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "ed93a68c-a85d-4b2a-ac85-bf1b285d615c",
+  "prevId": "22ae0911-c314-4477-b80a-188683d2b086",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -190,6 +190,60 @@
         }
       }
     },
+    "public.nn_book_clubs": {
+      "name": "nn_book_clubs",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "current_book_id": {
+          "name": "current_book_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_private": {
+          "name": "is_private",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "nn_book_clubs_current_book_id_nn_books_id_fk": {
+          "name": "nn_book_clubs_current_book_id_nn_books_id_fk",
+          "tableFrom": "nn_book_clubs",
+          "tableTo": "nn_books",
+          "columnsFrom": [
+            "current_book_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "public.nn_books": {
       "name": "nn_books",
       "schema": "",
@@ -202,7 +256,7 @@
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true
         },
@@ -215,6 +269,12 @@
         "published": {
           "name": "published",
           "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "publisher_id": {
+          "name": "publisher_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
@@ -233,6 +293,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "nn_books_publisher_id_nn_publishers_id_fk": {
+          "name": "nn_books_publisher_id_nn_publishers_id_fk",
+          "tableFrom": "nn_books",
+          "tableTo": "nn_publishers",
+          "columnsFrom": [
+            "publisher_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
         "nn_books_userId_nn_users_id_fk": {
           "name": "nn_books_userId_nn_users_id_fk",
           "tableFrom": "nn_books",
@@ -342,7 +415,7 @@
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true
         }
@@ -430,6 +503,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "book_id": {
+          "name": "book_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
         "rating": {
           "name": "rating",
           "type": "integer",
@@ -464,6 +543,19 @@
       },
       "indexes": {},
       "foreignKeys": {
+        "nn_reviews_book_id_nn_books_id_fk": {
+          "name": "nn_reviews_book_id_nn_books_id_fk",
+          "tableFrom": "nn_reviews",
+          "tableTo": "nn_books",
+          "columnsFrom": [
+            "book_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "nn_reviews_userId_nn_users_id_fk": {
           "name": "nn_reviews_userId_nn_users_id_fk",
           "tableFrom": "nn_reviews",
