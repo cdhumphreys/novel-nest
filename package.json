@@ -28,6 +28,7 @@
     "drizzle-kit": "^0.24.2",
     "eslint": "^8",
     "eslint-config-next": "14.2.6",
+    "open-props": "^1.7.6",
     "sass": "^1.77.8",
     "typescript": "^5"
   }
