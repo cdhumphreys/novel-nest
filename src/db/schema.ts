@@ -198,6 +198,10 @@ export const reviewsRelations = relations(reviews, ({ one, many }) => ({
     comments: many(reviewComments)
 }));
 export const reviewCommentsRelations = relations(reviewComments, ({ one, many }) => ({
+    author: one(users, {
+        fields: [reviewComments.userId],
+        references: [users.id]
+    }),
     review: one(reviews, {
         fields: [reviewComments.reviewId],
         references: [reviews.id]
@@ -224,5 +228,13 @@ export const usersToGroupsRelations = relations(usersToClubs, ({ one }) => ({
 }));
 
 // Type exports
-export type InsertUser = typeof users.$inferInsert;
-export type SelectUser = typeof users.$inferSelect;
+export type User = typeof users.$inferSelect;
+export type Profile = typeof profiles.$inferSelect;
+
+export type Publisher = typeof publishers.$inferSelect;
+export type Book = typeof books.$inferSelect;
+
+export type Reviews = typeof reviews.$inferSelect;
+export type ReviewComments = typeof reviewComments.$inferSelect;
+
+export type BookClubs = typeof bookClubs.$inferSelect;
