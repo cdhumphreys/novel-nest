@@ -3,9 +3,10 @@
 
 /* optional imports that use the props */
 @import "open-props/normalize";
-@import "open-props/buttons";
 
+@import "./variables.scss";
 @import "./container.scss";
+@import "./buttons.scss";
 
 *,
 *::before,
@@ -17,6 +18,11 @@
 body {
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    font-family: var(--font-inter);
+
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
 img,
