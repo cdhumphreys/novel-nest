@@ -1,14 +1,13 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Header from "@/components/header";
+import '@/globals.scss';
 
-import "./styles/globals.scss";
-import "./styles/header.scss";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Novel Nest",
-  description: "Cozy reading time ☕️📚",
+  description: "Your cozy digital reading nook - discover, track and share your favorite books in a warm, welcoming community",
 };
 
 export default function RootLayout({
