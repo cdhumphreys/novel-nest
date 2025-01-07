@@ -1,0 +1,68 @@
+[
+    {
+        "id": "1",
+        "title": "The Midnight Library",
+        "author": "Matt Haig",
+        "description": "Between life and death there is a library, and within that library, the shelves go on forever.",
+        "rating": 4.2,
+        "dateAdded": "2021-03-15T14:32:11Z"
+    },
+    {
+        "id": "2",
+        "title": "Project Hail Mary",
+        "author": "Andy Weir",
+        "description": "A lone astronaut must save humanity from a catastrophic extinction event.",
+        "rating": 4.8,
+        "dateAdded": "2022-08-23T09:15:44Z"
+    },
+    {
+        "id": "3",
+        "title": "Tomorrow, and Tomorrow, and Tomorrow",
+        "author": "Gabrielle Zevin",
+        "description": "A story about friendship, art, love, and video games spanning thirty years.",
+        "rating": 3.5,
+        "dateAdded": "2023-01-05T16:45:22Z"
+    },
+    {
+        "id": "4",
+        "title": "Lessons in Chemistry",
+        "author": "Bonnie Garmus",
+        "description": "A chemist becomes a cooking show host in the 1960s and teaches women to challenge the status quo.",
+        "rating": 4.6,
+        "dateAdded": "2022-11-30T11:20:33Z"
+    },
+    {
+        "id": "5",
+        "title": "The Seven Husbands of Evelyn Hugo",
+        "author": "Taylor Jenkins Reid",
+        "description": "A reclusive Hollywood icon reveals her life story to an unknown journalist, exploring fame, ambition, and forbidden love.",
+        "rating": 4.5,
+        "coverImage": "https://picsum.photos/200/300?random=2",
+        "dateAdded": "2020-06-18T08:55:19Z"
+    },
+    {
+        "id": "6",
+        "title": "Sea of Tranquility",
+        "author": "Emily St. John Mandel",
+        "description": "A time travel narrative connecting characters across centuries, from the Canadian wilderness to lunar colonies.",
+        "rating": 3.8,
+        "dateAdded": "2023-09-12T13:40:55Z"
+    },
+    {
+        "id": "7",
+        "title": "Cloud Cuckoo Land",
+        "author": "Anthony Doerr",
+        "description": "An ambitious novel weaving together multiple storylines across centuries, connected by an ancient text.",
+        "rating": 4.3,
+        "dateAdded": "2021-12-07T15:25:48Z"
+    },
+    {
+        "id": "8",
+        "title": "The Diamond Eye",
+        "author": "Kate Quinn",
+        "description": "Based on a true story of a librarian who becomes one of the most successful snipers in World War II.",
+        "rating": 2.9,
+        "coverImage": "https://picsum.photos/200/300",
+        "dateAdded": "2023-04-28T10:05:37Z"
+    }
+]
