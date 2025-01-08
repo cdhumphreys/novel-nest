@@ -7,53 +7,92 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Bars3Icon, UserCircleIcon } from "@heroicons/react/16/solid";
-import { CircleUser, LibraryBig } from "lucide-react";
+import { CircleUser, LibraryBig, BookOpen, BookUser } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const ProfileButton = ({
+
+const NavButton = ({
     text,
+    href,
+    icon: Icon,
     className,
+    variant,
 }: {
     text?: string;
+    href: string;
+    variant?: "link" | "outline" | "default" | "destructive" | "secondary" | "ghost" | null | undefined;
+    icon: React.ElementType;
     className?: string;
 }) => {
     return (
         <Button
             type="button"
-            variant="secondary"
+            variant={variant}
             className={cn(className, "[&_svg]:size-5")}
             asChild
         >
-            <Link href="/profile" aria-label={text}>
-                <CircleUser />
-                <span className="lg:hidden">{text}</span>
+            <Link href={href}>
+                <Icon />
+                {text && <span>{text}</span>}
             </Link>
         </Button>
     );
 };
 
-const LibraryButton = ({
-    text,
-    className,
-}: {
-    text?: string;
-    className?: string;
-}) => {
+
+const MobileMenu = () => {
     return (
-        <Button
-            type="button"
-            variant="default"
-            className={cn(className, "[&_svg]:size-5")}
-            asChild
-        >
-            <Link href="/my-library" aria-label={text}>
-                <LibraryBig />
-                <span className="lg:hidden">{text}</span>
-            </Link>
-        </Button>
+        <div className="lg:hidden flex">
+            <DropdownMenu>
+                <DropdownMenuTrigger>
+                    <Bars3Icon className="h-6 w-6" />
+                    <span className="sr-only">Open Menu</span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent collisionPadding={10}>
+                    <DropdownMenuItem>
+                        <NavButton
+                            href="/books"
+                            text="Books"
+                            icon={BookOpen}
+                            variant="link"
+                            className="grow justify-start"
+                        />
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                        <NavButton
+                            href="/authors"
+                            text="Authors"
+                            icon={BookUser}
+                            variant="link"
+                            className="grow justify-start"
+                        />
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem>
+                        <NavButton
+                            href="/my-profile"
+                            text="My Profile"
+                            icon={UserCircleIcon}
+                            className="grow justify-start"
+                            variant="secondary"
+                        />
+                    </DropdownMenuItem>
+                    <DropdownMenuItem>
+                        <NavButton
+                            href="/my-library"
+                            text="My Library"
+                            icon={LibraryBig}
+                            className="grow justify-start"
+                            variant="secondary"
+                        />
+                    </DropdownMenuItem>
+                </DropdownMenuContent>
+            </DropdownMenu>
+        </div>
     );
 };
 
@@ -69,31 +108,44 @@ export default function Header() {
                     >
                         NovelNest
                     </Link>
-                    <div className="lg:hidden flex">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger>
-                                <Bars3Icon className="h-6 w-6" />
-                                <span className="sr-only">Open Menu</span>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent>
-                                <DropdownMenuItem>
-                                    <ProfileButton
-                                        className="grow justify-start"
-                                        text="My Profile"
-                                    />
-                                </DropdownMenuItem>
-                                <DropdownMenuItem>
-                                    <LibraryButton
-                                        className="grow justify-start"
-                                        text="My Library"
-                                    />
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                    <MobileMenu />
+                    {/* Spacer */}
+                    <div className="hidden lg:flex flex-[2]"></div>
+                    <div className="hidden lg:flex gap-4">
+                        <NavButton
+                            href="/books"
+                            text="Books"
+                            icon={BookOpen}
+                            variant="link"
+                            className="w-full justify-start"
+                        />
+                        <NavButton
+                            href="/authors"
+                            text="Authors"
+                            icon={BookUser}
+                            className="w-full justify-start"
+                            variant="link"
+                        />
                     </div>
+                    {/* Spacer */}
+                    <div className="hidden lg:flex flex-[1]"></div>
                     <div className="hidden lg:flex items-center gap-5">
-                        <LibraryButton text="My Library" />
-                        <ProfileButton text="Profile" />
+                        <NavButton
+                            href="/my-library"
+                            text="My Library"
+                            icon={LibraryBig}
+                            className="grow justify-start"
+                            variant="secondary"
+
+                        />
+                        <NavButton
+                            href="/my-profile"
+                            text="My Profile"
+                            icon={UserCircleIcon}
+                            className="grow justify-start"
+                            variant="secondary"
+
+                        />
                     </div>
                 </div>
             </div>
