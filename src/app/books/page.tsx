@@ -1,10 +1,9 @@
 import BookList from "@/components/blocks/BooksList";
-import type { Book } from "@/app/api/types";
+import { getAuthors, getBooks } from "@/app/api/utils";
 
 export default async function BooksPage() {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/books`);
-    const { data: books }: { data: Book[] } = await res.json();
-
+    const books = await getBooks();
+    const authors = await getAuthors();
 
     const sortedBooks = books.sort((a, b) => {
         return (
@@ -12,6 +11,6 @@ export default async function BooksPage() {
         );
     });
 
-    return <BookList title="All Books" books={sortedBooks} />;
+    return <BookList title="All Books" books={sortedBooks} authors={authors} />;
 }
 

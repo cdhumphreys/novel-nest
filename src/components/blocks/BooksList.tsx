@@ -26,13 +26,14 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-import { EyeIcon, SearchX, StarHalfIcon, StarIcon } from "lucide-react";
+import { EyeIcon, SearchX } from "lucide-react";
 import { Button } from "../ui/button";
 
 import type { Book, Author } from "@/app/api/types";
 
 import { getHumanReadableDate } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
+import RatingStars from "../RatingStars";
 
 const TooltipCoverImage = ({ book }: { book: Book }) => {
     return (
@@ -61,42 +62,35 @@ const TooltipCoverImage = ({ book }: { book: Book }) => {
 };
 
 function AuthorPreview({ author }: { author: Author }) {
-    return (
-        <HoverCard>
-            <HoverCardTrigger>{author.name}</HoverCardTrigger>
-            <HoverCardContent>
-                <div className="flex gap-10">
-                    <div className="flex flex-col gap-2">
-                        <p>{author.name}</p>
-                        <p>{author.bio}</p>
-                        {author.birthDate && <p>{getHumanReadableDate(author.birthDate)}</p>}
-                        {author.deathDate && <p>{getHumanReadableDate(author.deathDate)}</p>}
-                    </div>
-                    {author.image && <Image src={author.image} width={200} height={200} alt={author.name} />}
-                </div>
-            </HoverCardContent>
-        </HoverCard>
-    );
-}
-
-function getRatingStars(rating: number) {
+    // Workaround to prevent hydration error
+    const [clientLoaded, setClientLoaded] = useState(false);
+    useEffect(() => {
+        setClientLoaded(true);
+    }, []);
     return (
         <>
-            {[...Array(Math.floor(rating))].map((_, i) => (
-                <StarIcon key={i} className="w-4 h-4 fill-current" />
-            ))}
-            {rating % 1 >= 0 && (
-                <StarHalfIcon className="w-4 h-4 fill-current" />
+            {clientLoaded && (
+                <HoverCard>
+                    <HoverCardTrigger>{author.name}</HoverCardTrigger>
+                    <HoverCardContent asChild>
+                        <div className="flex gap-10">
+                            <div className="flex flex-col gap-2">
+                                <p>{author.name}</p>
+                                {author.bio && <p>{author.bio}</p>}
+                                {author.birthDate && <p>{getHumanReadableDate(author.birthDate)}</p>}
+                                {author.deathDate && <p>{getHumanReadableDate(author.deathDate)}</p>}
+                            </div>
+                            {author.image && <Image src={author.image} width={200} height={200} alt={author.name} />}
+                        </div>
+                    </HoverCardContent>
+                </HoverCard>
             )}
-            {[...Array(5 - Math.ceil(rating))].map((_, i) => (
-                <StarIcon
-                    key={i}
-                    className="w-4 h-4 text-muted-foreground/25"
-                />
-            ))}
         </>
-    );
+    )
+
 }
+
+
 
 function BookCard({ book, author }: { book: Book, author?: Author }) {
     const [isHovered, setIsHovered] = useState(false);
@@ -191,7 +185,7 @@ function BookCard({ book, author }: { book: Book, author?: Author }) {
                                 </span>
                             </CardTitle>
                             <CardDescription>
-                                {author && <AuthorPreview author={author} />}
+                                {author != null ? <AuthorPreview author={author} /> : <span className="text-muted-foreground">Unknown author</span>}
                             </CardDescription>
                         </div>
                         {book.coverImage && (
@@ -201,10 +195,7 @@ function BookCard({ book, author }: { book: Book, author?: Author }) {
                         )}
                     </div>
 
-                    <div className="flex items-center gap-1">
-                        {book.rating && getRatingStars(book.rating)}
-                        <span>{book.rating || 'No ratings yet'}</span>
-                    </div>
+                    {book.rating && <RatingStars rating={book.rating} />}
                 </CardHeader>
                 <CardContent>
                     <p>{book.description || 'No description available'}</p>
@@ -229,12 +220,20 @@ function BookCard({ book, author }: { book: Book, author?: Author }) {
 export default function BookList({
     title,
     books = [],
+    authors = [],
     children,
 }: {
     title: string;
     books?: Book[];
+    authors?: Author[];
     children?: React.ReactNode;
 }) {
+    const booksWithAuthors = books.map((book) => {
+        return {
+            book,
+            author: authors.find((author) => author.id === book.authorId),
+        };
+    });
     return (
         <div className="container py-6 flex flex-col gap-8">
             <div className="flex justify-between gap-5 items-center">
@@ -244,15 +243,15 @@ export default function BookList({
                 {children}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-5">
-                {books.length > 0 ? (
-                    books.map((book) => {
+                {booksWithAuthors.length > 0 ? (
+                    booksWithAuthors.map(({ book, author }) => {
                         return (
                             <Link
                                 href={`/books/${book.id}`}
                                 key={book.id}
                                 className="flex"
                             >
-                                <BookCard book={book} />
+                                <BookCard book={book} author={author} />
                             </Link>
                         );
                     })
