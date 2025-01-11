@@ -2,65 +2,181 @@
     {
         "id": "1",
         "title": "The Midnight Library",
-        "author": "Matt Haig",
+        "author": "1",
         "description": "Between life and death there is a library, and within that library, the shelves go on forever.",
         "rating": 4.2,
-        "dateAdded": "2021-03-15T14:32:11Z"
+        "dateAdded": "2021-03-15T14:32:11Z",
+        "genres": [
+            "Fiction",
+            "Fantasy",
+            "Contemporary",
+            "Self Help"
+        ]
     },
     {
         "id": "2",
         "title": "Project Hail Mary",
-        "author": "Andy Weir",
-        "dateAdded": "2022-08-23T09:15:44Z"
+        "author": "2",
+        "dateAdded": "2022-08-23T09:15:44Z",
+        "genres": [
+            "Science Fiction",
+            "Adventure",
+            "Space Opera"
+        ]
     },
     {
         "id": "3",
         "title": "Tomorrow, and Tomorrow, and Tomorrow",
-        "author": "Gabrielle Zevin",
+        "author": "3",
         "description": "A story about friendship, art, love, and video games spanning thirty years.",
         "rating": 3.5,
-        "dateAdded": "2023-01-05T16:45:22Z"
+        "dateAdded": "2023-01-05T16:45:22Z",
+        "genres": [
+            "Literary Fiction",
+            "Contemporary",
+            "Romance"
+        ]
     },
     {
         "id": "4",
         "title": "Lessons in Chemistry",
-        "author": "Bonnie Garmus",
+        "author": "4",
         "description": "A chemist becomes a cooking show host in the 1960s and teaches women to challenge the status quo.",
         "rating": 4.6,
-        "dateAdded": "2022-11-30T11:20:33Z"
+        "dateAdded": "2022-11-30T11:20:33Z",
+        "genres": [
+            "Historical Fiction",
+            "Feminism",
+            "Literary Fiction"
+        ]
     },
     {
         "id": "5",
         "title": "The Seven Husbands of Evelyn Hugo",
-        "author": "Taylor Jenkins Reid",
+        "author": "5",
         "description": "A reclusive Hollywood icon reveals her life story to an unknown journalist, exploring fame, ambition, and forbidden love.",
         "rating": 4.5,
         "coverImage": "https://picsum.photos/200/300?random=2",
-        "dateAdded": "2020-06-18T08:55:19Z"
+        "dateAdded": "2020-06-18T08:55:19Z",
+        "genres": [
+            "Historical Fiction",
+            "Romance",
+            "LGBTQ+"
+        ]
     },
     {
         "id": "6",
         "title": "Sea of Tranquility",
-        "author": "Emily St. John Mandel",
+        "author": "6",
         "description": "A time travel narrative connecting characters across centuries, from the Canadian wilderness to lunar colonies.",
         "rating": 3.8,
-        "dateAdded": "2023-09-12T13:40:55Z"
+        "dateAdded": "2023-09-12T13:40:55Z",
+        "genres": [
+            "Science Fiction",
+            "Literary Fiction",
+            "Time Travel"
+        ]
     },
     {
         "id": "7",
         "title": "Cloud Cuckoo Land",
-        "author": "Anthony Doerr",
+        "author": "7",
         "description": "An ambitious novel weaving together multiple storylines across centuries, connected by an ancient text.",
         "rating": 4.3,
-        "dateAdded": "2021-12-07T15:25:48Z"
+        "dateAdded": "2021-12-07T15:25:48Z",
+        "genres": [
+            "Historical Fiction",
+            "Literary Fiction",
+            "Science Fiction"
+        ]
     },
     {
         "id": "8",
         "title": "The Diamond Eye",
-        "author": "Kate Quinn",
+        "author": "8",
         "description": "Based on a true story of a librarian who becomes one of the most successful snipers in World War II.",
         "rating": 2.9,
         "coverImage": "https://picsum.photos/200/300",
-        "dateAdded": "2023-04-28T10:05:37Z"
+        "dateAdded": "2023-04-28T10:05:37Z",
+        "genres": [
+            "Historical Fiction",
+            "War",
+            "Biography"
+        ]
+    },
+    {
+        "id": "9",
+        "title": "The Invisible Life of Addie LaRue",
+        "author": "9",
+        "description": "A woman makes a Faustian bargain to live forever but is cursed to be forgotten by everyone she meets.",
+        "rating": 4.4,
+        "coverImage": "https://picsum.photos/200/300?random=3",
+        "dateAdded": "2023-10-15T17:30:00Z",
+        "datePublished": "2020-10-06",
+        "pages": 448,
+        "language": "English",
+        "publisher": "Tor Books",
+        "isbn": "9780765387561",
+        "genres": [
+            "Fantasy",
+            "Historical Fiction",
+            "Romance"
+        ]
+    },
+    {
+        "id": "10",
+        "title": "Babel",
+        "author": "10",
+        "description": "A dark academia fantasy about the power of translation and silver-working in 1830s Oxford.",
+        "rating": 4.7,
+        "coverImage": "https://picsum.photos/200/300?random=4",
+        "dateAdded": "2023-11-01T09:45:00Z",
+        "datePublished": "2022-08-23",
+        "pages": 560,
+        "language": "English",
+        "publisher": "Harper Voyager",
+        "isbn": "9780063021426",
+        "genres": [
+            "Fantasy",
+            "Historical Fiction",
+            "Dark Academia"
+        ]
+    },
+    {
+        "id": "11",
+        "title": "The Atlas Six",
+        "author": "11",
+        "description": "Six magicians compete for five spots in a secret society of magical academics.",
+        "rating": 4.1,
+        "coverImage": "https://picsum.photos/200/300?random=5",
+        "dateAdded": "2023-11-05T14:20:00Z",
+        "datePublished": "2022-03-01",
+        "pages": 384,
+        "language": "English",
+        "publisher": "Tor Books",
+        "isbn": "9781250854513",
+        "genres": [
+            "Fantasy",
+            "Dark Academia",
+            "New Adult"
+        ]
+    },
+    {
+        "id": "12",
+        "title": "The Martian",
+        "author": "2",
+        "description": "An astronaut becomes stranded alone on Mars and must use his ingenuity to survive.",
+        "rating": 4.8,
+        "dateAdded": "2023-11-10T10:00:00Z",
+        "datePublished": "2011-09-27",
+        "pages": 384,
+        "language": "English",
+        "publisher": "Crown Publishing Group",
+        "isbn": "9780804139021",
+        "genres": [
+            "Science Fiction",
+            "Adventure",
+            "Survival"
+        ]
     }
 ]
