@@ -13,6 +13,13 @@ import {
 } from "@/components/ui/card";
 
 import {
+    HoverCard,
+    HoverCardContent,
+    HoverCardTrigger,
+} from "@/components/ui/hover-card"
+
+
+import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
@@ -22,7 +29,8 @@ import {
 import { EyeIcon, SearchX, StarHalfIcon, StarIcon } from "lucide-react";
 import { Button } from "../ui/button";
 
-import type { Book } from "@/app/api/books/data";
+import type { Book, Author } from "@/app/api/types";
+
 import { getHumanReadableDate } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
 
@@ -52,6 +60,25 @@ const TooltipCoverImage = ({ book }: { book: Book }) => {
     );
 };
 
+function AuthorPreview({ author }: { author: Author }) {
+    return (
+        <HoverCard>
+            <HoverCardTrigger>{author.name}</HoverCardTrigger>
+            <HoverCardContent>
+                <div className="flex gap-10">
+                    <div className="flex flex-col gap-2">
+                        <p>{author.name}</p>
+                        <p>{author.bio}</p>
+                        {author.birthDate && <p>{getHumanReadableDate(author.birthDate)}</p>}
+                        {author.deathDate && <p>{getHumanReadableDate(author.deathDate)}</p>}
+                    </div>
+                    {author.image && <Image src={author.image} width={200} height={200} alt={author.name} />}
+                </div>
+            </HoverCardContent>
+        </HoverCard>
+    );
+}
+
 function getRatingStars(rating: number) {
     return (
         <>
@@ -71,7 +98,7 @@ function getRatingStars(rating: number) {
     );
 }
 
-function BookCard({ book }: { book: Book }) {
+function BookCard({ book, author }: { book: Book, author?: Author }) {
     const [isHovered, setIsHovered] = useState(false);
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
     const cardWrapperRef = useRef<HTMLDivElement>(null);
@@ -154,7 +181,7 @@ function BookCard({ book }: { book: Book }) {
 
     return (
         <div ref={cardWrapperRef} className="book-list-card-wrapper w-full flex hover:z-10">
-            <Card ref={cardRef} key={book.id} className="book-list-card w-full flex flex-col hover:border-slate-300">
+            <Card ref={cardRef} key={book.id} className="book-list-card w-full flex flex-col hover:border-slate-300 dark:hover:border-slate-600">
                 <CardHeader>
                     <div className="flex justify-between items-center gap-2">
                         <div className="flex flex-col gap-2">
@@ -164,7 +191,7 @@ function BookCard({ book }: { book: Book }) {
                                 </span>
                             </CardTitle>
                             <CardDescription>
-                                {book.author || 'Unknown author'}
+                                {author && <AuthorPreview author={author} />}
                             </CardDescription>
                         </div>
                         {book.coverImage && (
