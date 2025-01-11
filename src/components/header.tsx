@@ -99,7 +99,7 @@ const MobileMenu = () => {
 
 export default function Header() {
     return (
-        <header>
+        <header className="sticky top-0 z-50 bg-background">
             <div className="container mx-auto py-6">
                 <div className="flex justify-between items-center gap-5">
                     <Link
