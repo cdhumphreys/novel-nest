@@ -1,4 +1,4 @@
-import BookList from "@/components/blocks/BooksList";
+import BookList from "@/components/blocks/books-list";
 import { getAuthors, getBooks } from "@/app/api/utils";
 
 export default async function BooksPage() {

@@ -1,4 +1,4 @@
-import BookList from "@/components/blocks/BooksList";
+import BookList from "@/components/blocks/books-list";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getBooks } from "./api/utils";
