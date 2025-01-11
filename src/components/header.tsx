@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-
+import type { ButtonVariant } from "./ui/button";
 import { Button } from "./ui/button";
 import {
     DropdownMenu,
@@ -10,9 +10,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Bars3Icon, UserCircleIcon } from "@heroicons/react/16/solid";
-import { CircleUser, LibraryBig, BookOpen, BookUser } from "lucide-react";
+import { Bars3Icon } from "@heroicons/react/16/solid";
+import { CircleUser, LibraryBig, BookOpen, BookUser, Sun, Moon } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useTheme } from "next-themes";
+import { useEffect } from "react";
+import ThemeToggle from "./ThemeToggle";
 
 
 const NavButton = ({
@@ -24,7 +27,7 @@ const NavButton = ({
 }: {
     text?: string;
     href: string;
-    variant?: "link" | "outline" | "default" | "destructive" | "secondary" | "ghost" | null | undefined;
+    variant?: ButtonVariant;
     icon: React.ElementType;
     className?: string;
 }) => {
@@ -76,7 +79,7 @@ const MobileMenu = () => {
                         <NavButton
                             href="/my-profile"
                             text="My Profile"
-                            icon={UserCircleIcon}
+                            icon={CircleUser}
                             className="grow justify-start"
                             variant="secondary"
                         />
@@ -108,7 +111,10 @@ export default function Header() {
                     >
                         NovelNest
                     </Link>
-                    <MobileMenu />
+                    <div className="flex items-center gap-5 lg:hidden">
+                        <ThemeToggle variant="outline" />
+                        <MobileMenu />
+                    </div>
                     {/* Spacer */}
                     <div className="hidden lg:flex flex-[2]"></div>
                     <div className="hidden lg:flex gap-4">
@@ -141,11 +147,12 @@ export default function Header() {
                         <NavButton
                             href="/my-profile"
                             text="My Profile"
-                            icon={UserCircleIcon}
+                            icon={CircleUser}
                             className="grow justify-start"
                             variant="secondary"
 
                         />
+                        <ThemeToggle variant="outline" />
                     </div>
                 </div>
             </div>
