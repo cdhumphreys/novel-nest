@@ -1,11 +1,11 @@
-import type { Book } from "../data";
+import type { Book } from "@/app/api/types";
 
 export async function GET(
     request: Request,
     { params }: { params: { id: string } }
 ) {
     try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/books.json`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/books.json`, process.env.NODE_ENV != "production" ? { cache: "no-store" } : {});
         const data: Book[] = await res.json();
         const book: Book | undefined = data.find(
             (book: Book) => book.id === params.id

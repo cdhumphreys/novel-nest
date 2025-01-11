@@ -1,4 +1,4 @@
-import type { Book } from "@/app/api/books/data";
+import type { Book, Author } from "@/app/api/types";
 import Image from "next/image";
 
 export default async function BookPage({ params }: { params: { id: string } }) {
@@ -6,6 +6,10 @@ export default async function BookPage({ params }: { params: { id: string } }) {
         `${process.env.NEXT_PUBLIC_DOMAIN}/api/books/${params.id}`
     );
     const { data: book }: { data: Book } = await res.json();
+
+    const resAuthors = await fetch(`${process.env.NEXT_PUBLIC_DOMAIN}/api/authors/${book.author}`);
+    const { data: author }: { data: Author } = await resAuthors.json();
+
     return (
         <div className="container py-6 lg:py-12">
             <div className="flex flex-col gap-8 lg:flex-row lg:justify-between lg:w-2/3 lg:mx-auto">
@@ -15,7 +19,7 @@ export default async function BookPage({ params }: { params: { id: string } }) {
                             {book.title}
                         </h1>
                         <p className="text-sm lg:text-base text-gray-500">
-                            {book.author}
+                            {author.name}
                         </p>
                     </div>
                     <p className="max-w-prose">{book.description}</p>
