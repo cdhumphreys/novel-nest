@@ -33,7 +33,7 @@ import type { Book, Author } from "@/app/api/types";
 
 import { getHumanReadableDate } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
-import RatingStars from "../RatingStars";
+import RatingStars from "../rating-stars";
 
 const TooltipCoverImage = ({ book }: { book: Book }) => {
     return (

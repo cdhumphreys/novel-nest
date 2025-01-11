@@ -11,11 +11,9 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Bars3Icon } from "@heroicons/react/16/solid";
-import { CircleUser, LibraryBig, BookOpen, BookUser, Sun, Moon } from "lucide-react";
+import { CircleUser, LibraryBig, BookOpen, BookUser } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useTheme } from "next-themes";
-import { useEffect } from "react";
-import ThemeToggle from "./ThemeToggle";
+import ThemeToggle from "./theme-toggle";
 
 
 const NavButton = ({

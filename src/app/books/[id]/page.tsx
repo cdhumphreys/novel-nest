@@ -1,5 +1,5 @@
 import { getBook, getAuthors } from "@/app/api/utils";
-import RatingStars from "@/components/RatingStars";
+import RatingStars from "@/components/rating-stars";
 import Image from "next/image";
 
 export default async function BookPage({ params }: { params: { id: string } }) {
