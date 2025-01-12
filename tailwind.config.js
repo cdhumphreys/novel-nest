@@ -7,7 +7,12 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem"
+      padding: {
+        DEFAULT: "16px",
+        lg: "32px",
+        xl: "48px",
+        "2xl": "64px",
+      }
     },
     extend: {
       borderRadius: {
