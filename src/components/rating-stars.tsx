@@ -16,15 +16,12 @@ export default function RatingStars({ rating, size = 'sm' }: { rating: number, s
             {rating && (
                 <>
                     {[...Array(Math.floor(rating))].map((_, i) => (
-                        <StarIcon key={i} className={`${sizeClass} fill-current`} />
+                        <StarIcon key={i} className={`${sizeClass} text-transparent fill-yellow-500`} />
                     ))}
-                    {rating % 1 >= 0 && (
-                        <StarHalfIcon className={`${sizeClass} fill-current`} />
-                    )}
-                    {[...Array(5 - Math.ceil(rating))].map((_, i) => (
+                    {[...Array(5 - Math.floor(rating))].map((_, i) => (
                         <StarIcon
                             key={i}
-                            className={`${sizeClass} text-muted-foreground/25`}
+                            className={`${sizeClass} fill-black text-muted-foreground/25`}
                         />
                     ))}
                 </>
