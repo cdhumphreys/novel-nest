@@ -8,6 +8,7 @@ import { getBook } from "@/server/actions/books";
 import { getAuthor } from "@/server/actions/authors";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { getReviewsByBookId } from "@/server/actions/reviews";
 
 function BookNotFound() {
     return (
@@ -34,17 +35,19 @@ export default async function BookPage({ params }: { params: { id: string } }) {
         return <BookNotFound />;
     }
 
+    const { data: reviews, error: reviewsError } = await getReviewsByBookId(book.id);
+
     const { data: author, error: authorsError } = await getAuthor(book.authorId);
 
     return (
-        <div className="container pt-10 pb-20 flex flex-col gap-10 lg:grid lg:grid-cols-[400px_1fr] lg:gap-10">
+        <div className="container pt-10 pb-20 flex flex-col gap-10 lg:grid lg:grid-cols-[400px_minmax(0,60ch)] lg:gap-10 lg:mx-auto lg:w-fit">
             <div className="lg:sticky lg:top-10">
                 <BookDetails book={book} author={author || undefined} />
             </div>
-            <div className="flex flex-col gap-10 max-w-[60ch] mx-auto lg:max-0 lg:max-w-none">
+            <div className="flex flex-col gap-10">
                 <BookDescription book={book} />
                 <hr />
-                <BookReviews book={book} />
+                <BookReviews reviews={reviews} />
                 <hr />
                 {author && <BookAuthor author={author} />}
 

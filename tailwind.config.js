@@ -9,6 +9,7 @@ export default {
       center: true,
       padding: {
         DEFAULT: "16px",
+        sm: "24px",
         lg: "32px",
         xl: "48px",
         "2xl": "64px",

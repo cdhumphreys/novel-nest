@@ -1,0 +1,58 @@
+[
+    {
+        "id": "1",
+        "bookId": "1",
+        "userId": "user1",
+        "rating": 4,
+        "comment": "A fascinating exploration of artificial intelligence and consciousness. The philosophical questions raised kept me thinking long after I finished reading.",
+        "datePosted": "2023-11-15T09:23:45Z"
+    },
+    {
+        "id": "2",
+        "bookId": "1",
+        "userId": "user2",
+        "rating": 5,
+        "comment": "Absolutely brilliant! The way the author weaves together technology and humanity is masterful. Couldn't put it down.",
+        "datePosted": "2023-10-28T15:42:18Z"
+    },
+    {
+        "id": "3",
+        "bookId": "3",
+        "userId": "user3",
+        "rating": 5,
+        "comment": "Tomorrow, and Tomorrow, and Tomorrow is a masterpiece. The way it explores friendship, love, and creativity through the lens of game development is incredible.",
+        "datePosted": "2023-09-12T11:15:33Z"
+    },
+    {
+        "id": "4",
+        "bookId": "4",
+        "userId": "user4",
+        "rating": 4,
+        "comment": "Lessons in Chemistry is both funny and poignant. Elizabeth Zott is an unforgettable character who challenges the status quo of 1960s America.",
+        "datePosted": "2023-08-30T16:55:21Z"
+    },
+    {
+        "id": "5",
+        "bookId": "9",
+        "userId": "user5",
+        "rating": 5,
+        "comment": "The Invisible Life of Addie LaRue is hauntingly beautiful. A unique premise executed perfectly. V.E. Schwab's writing is enchanting.",
+        "datePosted": "2023-11-02T14:28:59Z"
+    },
+    {
+        "id": "6",
+        "bookId": "9",
+        "userId": "user6",
+        "rating": 4,
+        "comment": "A compelling story about memory, time, and what makes a life worth living. The historical details are fascinating.",
+        "datePosted": "2023-10-05T08:47:12Z"
+    },
+    {
+        "id": "7",
+        "bookId": "12",
+        "userId": "user7",
+        "rating": 5,
+        "comment": "The Martian is a perfect blend of science, humor, and suspense. Mark Watney's resourcefulness and wit make this survival story both educational and entertaining. The technical details feel authentic without being overwhelming.",
+        "datePosted": "2023-12-01T10:33:27Z"
+    }
+]

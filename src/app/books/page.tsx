@@ -1,6 +1,7 @@
 import BookList from "@/components/blocks/books-list";
 import { getBooks } from "@/server/actions/books";
 import { getAuthors } from "@/server/actions/authors";
+import { getReviews } from "@/server/actions/reviews";
 
 export default async function BooksPage() {
     const { data: books, error: booksError } = await getBooks();
@@ -12,11 +13,13 @@ export default async function BooksPage() {
         );
     });
 
+    const { data: reviews, error: reviewsError } = await getReviews();
+
     if (booksError || authorsError) {
         return <div>Error: {booksError || authorsError}</div>;
     }
 
-    return <BookList title="All Books" books={sortedBooks} authors={authors} />;
+    return <BookList title="All Books" books={sortedBooks} authors={authors} reviews={reviews} />;
 }
 
 

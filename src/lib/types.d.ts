@@ -3,7 +3,6 @@ export type Book = {
     title: string;
     authorId?: string;
     description?: string;
-    rating?: number;
     coverImage?: string;
     dateAdded: string;
     datePublished?: string;
@@ -30,5 +29,5 @@ export type Review = {
     userId: string;
     rating: number;
     comment: string;
-    dateAdded: string;
+    datePosted: string;
 };

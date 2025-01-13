@@ -29,7 +29,7 @@ import {
 import { EyeIcon, SearchX } from "lucide-react";
 import { Button } from "../ui/button";
 
-import type { Book, Author } from "@/app/api/types";
+import type { Book, Author, Review } from "@/lib/types";
 
 import { getHumanReadableDate } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
@@ -92,7 +92,7 @@ function AuthorPreview({ author }: { author: Author }) {
 
 
 
-function BookCard({ book, author }: { book: Book, author?: Author }) {
+function BookCard({ book, author, rating }: { book: Book, author?: Author, rating?: number }) {
     const [isHovered, setIsHovered] = useState(false);
     const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
     const cardWrapperRef = useRef<HTMLDivElement>(null);
@@ -194,8 +194,7 @@ function BookCard({ book, author }: { book: Book, author?: Author }) {
                             />
                         )}
                     </div>
-
-                    {book.rating && <RatingStars rating={book.rating} />}
+                    {rating && <div className="flex gap-2 items-center"><RatingStars rating={rating} /> <span className="text-sm text-muted-foreground">{rating.toFixed(1)}</span></div>}
                 </CardHeader>
                 <CardContent>
                     <p>{book.description || 'No description available'}</p>
@@ -221,17 +220,22 @@ export default function BookList({
     title,
     books = [],
     authors = [],
+    reviews = [],
     children,
 }: {
     title: string;
     books?: Book[];
     authors?: Author[];
+    reviews?: Review[];
     children?: React.ReactNode;
 }) {
-    const booksWithAuthors = books.map((book) => {
+
+    const booksWithAuthorsAndRatings = books.map((book) => {
+        const relevantReviews = reviews.filter((review) => review.bookId === book.id);
         return {
             book,
             author: authors.find((author) => author.id === book.authorId),
+            rating: relevantReviews.length > 0 ? relevantReviews.reduce((acc, review) => acc + review.rating, 0) / relevantReviews.length : undefined,
         };
     });
     return (
@@ -243,15 +247,15 @@ export default function BookList({
                 {children}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-5">
-                {booksWithAuthors.length > 0 ? (
-                    booksWithAuthors.map(({ book, author }) => {
+                {booksWithAuthorsAndRatings.length > 0 ? (
+                    booksWithAuthorsAndRatings.map(({ book, author, rating }) => {
                         return (
                             <Link
                                 href={`/books/${book.id}`}
                                 key={book.id}
                                 className="flex"
                             >
-                                <BookCard book={book} author={author} />
+                                <BookCard book={book} author={author} rating={reviews.length > 0 ? rating : undefined} />
                             </Link>
                         );
                     })

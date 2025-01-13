@@ -13,7 +13,8 @@
         "bio": "Andy Weir is an American author and software engineer. He is best known for his science fiction novel The Martian, which was published in 2011 and became a New York Times bestseller. The Martian was later adapted into a film of the same name, directed by Ridley Scott and starring Matt Damon.",
         "dateAdded": "2022-08-23T09:15:44Z",
         "books": [
-            "2"
+            "2",
+            "12"
         ]
     },
     {
@@ -72,6 +73,22 @@
         "dateAdded": "2023-10-15T17:30:00Z",
         "books": [
             "9"
+        ]
+    },
+    {
+        "id": "10",
+        "name": "R.F. Kuang",
+        "dateAdded": "2023-10-15T17:30:00Z",
+        "books": [
+            "10"
+        ]
+    },
+    {
+        "id": "11",
+        "name": "Olivie Blake",
+        "dateAdded": "2023-11-05T14:20:00Z",
+        "books": [
+            "11"
         ]
     }
 ]
