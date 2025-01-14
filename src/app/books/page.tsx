@@ -2,6 +2,7 @@ import BookList from "@/components/blocks/books-list";
 import { getBooks } from "@/server/actions/books";
 import { getAuthors } from "@/server/actions/authors";
 import { getReviews } from "@/server/actions/reviews";
+import Spotlight from "@/components/spotlight";
 
 export default async function BooksPage() {
     const { data: books, error: booksError } = await getBooks();
@@ -19,7 +20,7 @@ export default async function BooksPage() {
         return <div>Error: {booksError || authorsError}</div>;
     }
 
-    return <BookList title="All Books" books={sortedBooks} authors={authors} reviews={reviews} />;
+    return <Spotlight><div className="container"><BookList title="All Books" books={sortedBooks} authors={authors} reviews={reviews} /></div></Spotlight>;
 }
 
 

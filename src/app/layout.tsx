@@ -18,10 +18,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={inter.className + " min-h-screen flex flex-col"}>
         <ThemeProvider defaultTheme="system" attribute="class" enableSystem>
           <Header />
-          <main>{children}</main>
+          <main className="flex flex-col flex-1">{children}</main>
         </ThemeProvider>
       </body>
     </html>

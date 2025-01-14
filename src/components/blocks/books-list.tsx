@@ -73,7 +73,7 @@ function AuthorPreview({ author }: { author: Author }) {
                 <HoverCard>
                     <HoverCardTrigger>{author.name}</HoverCardTrigger>
                     <HoverCardContent asChild>
-                        <div className="flex gap-10">
+                        <Link href={`/authors/${author.id}`} className="flex gap-10">
                             <div className="flex flex-col gap-2">
                                 <p>{author.name}</p>
                                 {author.bio && <p>{author.bio}</p>}
@@ -81,7 +81,7 @@ function AuthorPreview({ author }: { author: Author }) {
                                 {author.deathDate && <p>{getHumanReadableDate(author.deathDate)}</p>}
                             </div>
                             {author.image && <Image src={author.image} width={200} height={200} alt={author.name} />}
-                        </div>
+                        </Link>
                     </HoverCardContent>
                 </HoverCard>
             )}
@@ -130,8 +130,6 @@ function BookCard({ book, author, rating }: { book: Book, author?: Author, ratin
                 // Constants
                 const MAX_ROTATION_X = 10;
                 const MAX_ROTATION_Y = 10;
-                const MAX_SHADOW_X = 10;
-                const MAX_SHADOW_Y = 10;
 
                 const rect = wrapperRef.getBoundingClientRect();
                 const x = e.clientX - rect.left - rect.width / 2;
@@ -144,16 +142,10 @@ function BookCard({ book, author, rating }: { book: Book, author?: Author, ratin
                 const rotationX = Math.min(Math.max(ratioY * MAX_ROTATION_X, -MAX_ROTATION_X), MAX_ROTATION_X);
                 const rotationY = Math.min(Math.max(ratioX * MAX_ROTATION_Y, -MAX_ROTATION_Y), MAX_ROTATION_Y);
 
-                const shadowX = (ratioX * MAX_SHADOW_X);
-                const shadowY = (ratioY * MAX_SHADOW_Y);
-
                 // Rotate the card in opposite direction of mouse movement
                 cardRef.current.style.setProperty('--rotation-x', `${-rotationX}deg`);
                 cardRef.current.style.setProperty('--rotation-y', `${rotationY}deg`);
 
-                // Add shadow to the card in opposite direction of mouse movement
-                cardRef.current.style.setProperty('--shadow-x', `${shadowX}px`);
-                cardRef.current.style.setProperty('--shadow-y', `${shadowY}px`);
             };
 
             wrapperRef.addEventListener('mouseenter', handleMouseEnter);
@@ -175,7 +167,7 @@ function BookCard({ book, author, rating }: { book: Book, author?: Author, ratin
 
     return (
         <div ref={cardWrapperRef} className="book-list-card-wrapper w-full flex hover:z-10">
-            <Card ref={cardRef} key={book.id} className="book-list-card w-full flex flex-col hover:border-slate-300 dark:hover:border-slate-600">
+            <Card key={book.id} ref={cardRef} className="book-list-card w-full flex flex-col border-slate-300 dark:border-slate-600">
                 <CardHeader>
                     <div className="flex justify-between items-center gap-2">
                         <div className="flex flex-col gap-2">
@@ -239,12 +231,14 @@ export default function BookList({
         };
     });
     return (
-        <div className="container py-6 flex flex-col gap-8">
-            <div className="flex justify-between gap-5 items-center">
-                <h2 className="text-2xl font-bold font-serif lg:text-4xl">
-                    {title}
-                </h2>
-                {children}
+        <div className="flex flex-col gap-5">
+            <div className="py-6 flex flex-col gap-8">
+                <div className="flex justify-between gap-5 items-center">
+                    <h2 className="text-2xl font-bold font-serif lg:text-4xl">
+                        {title}
+                    </h2>
+                    {children}
+                </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-5">
                 {booksWithAuthorsAndRatings.length > 0 ? (
