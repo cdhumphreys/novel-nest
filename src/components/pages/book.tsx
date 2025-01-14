@@ -10,9 +10,10 @@ import { Button } from "@/components/ui/button";
 import StickyBlock from "../sticky-block";
 import { getHumanReadableDate } from "@/lib/utils";
 
-import { ImageOff } from "lucide-react";
+import { ImageOff, StarIcon } from "lucide-react";
 
 import Avatar from "boring-avatars";
+import { Children } from "react";
 
 function BookActions() {
     return (
@@ -41,18 +42,18 @@ function BookGenres({ genres }: { genres: string[] }) {
     )
 }
 
-function BookHeader({ title, author, rating }: { title: string, author?: Author, rating?: number }) {
+function BookHeader({ title, author, children }: { title: string, author?: Author, children?: React.ReactNode }) {
     return (
         <div className="flex flex-col gap-2 items-center px-6 py-4 rounded-tl-lg rounded-br-lg rounded-tr-3xl rounded-bl-3xl bg-secondary text-secondary-foreground w-full">
             <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-serif lg:text-4xl font-bold">
                     {title}
                 </h1>
-                {author ? <Link href={`/authors/${author.id}`} className="text-sm lg:text-base text-gray-500 hover:underline">
+                {author ? <Link href={`/authors/${author.id}`} className="text-sm lg:text-base text-foreground/50 hover:underline">
                     {author.name}
                 </Link> : <p className="text-sm lg:text-base text-gray-500">Unknown Author</p>}
             </div>
-            {rating && <RatingStars rating={rating} size="sm" />}
+            {children}
         </div>
     )
 }
@@ -61,7 +62,9 @@ function BookDetails({ book, author, rating }: { book: Book, author?: Author, ra
     return (
         <StickyBlock stickyMode="desktop" className="flex flex-col items-center gap-10" >
             <div className="flex flex-col gap-2 items-center lg:items-start">
-                <BookHeader title={book.title} author={author} rating={rating} />
+                <BookHeader title={book.title} author={author}>
+                    {rating && <span className="flex items-center gap-1 text-xs"><StarIcon className={`w-3 h-3 text-transparent fill-yellow-500`} />{rating.toFixed(1)}</span>}
+                </BookHeader>
                 {book.genres && <BookGenres genres={book.genres} />}
             </div>
             {book.coverImage ? <Image src={book.coverImage} alt={book.title} width={200} height={300} className="rounded-lg" /> : (
@@ -89,8 +92,8 @@ function BookReviews({ reviews }: { reviews: Review[] }) {
     return (
         <div className="flex flex-col gap-5">
             <div className="flex justify-between gap-4">
-                <h2 className="text-2xl font-serif font-bold">Reviews</h2>
-                {reviews.length > 0 ? <RatingStars rating={averageRating} size="md" /> : <div className="text-lg text-gray-500">No reviews yet</div>}
+                <h2 className="text-2xl font-serif font-bold">{reviews.length} Review{reviews.length > 1 ? "s" : ""}</h2>
+                {reviews.length > 0 ? <span className="flex items-center gap-2 text-foreground/50"><RatingStars rating={averageRating} size="md" />{averageRating.toFixed(1)} </span> : <div className="text-lg text-gray-500">No reviews yet</div>}
 
             </div>
             <div className="flex flex-col gap-5">

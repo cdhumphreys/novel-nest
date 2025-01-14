@@ -61,35 +61,6 @@ const TooltipCoverImage = ({ book }: { book: Book }) => {
     );
 };
 
-function AuthorPreview({ author }: { author: Author }) {
-    // Workaround to prevent hydration error
-    const [clientLoaded, setClientLoaded] = useState(false);
-    useEffect(() => {
-        setClientLoaded(true);
-    }, []);
-    return (
-        <>
-            {clientLoaded && (
-                <HoverCard>
-                    <HoverCardTrigger>{author.name}</HoverCardTrigger>
-                    <HoverCardContent asChild>
-                        <Link href={`/authors/${author.id}`} className="flex gap-10">
-                            <div className="flex flex-col gap-2">
-                                <p>{author.name}</p>
-                                {author.bio && <p>{author.bio}</p>}
-                                {author.birthDate && <p>{getHumanReadableDate(author.birthDate)}</p>}
-                                {author.deathDate && <p>{getHumanReadableDate(author.deathDate)}</p>}
-                            </div>
-                            {author.image && <Image src={author.image} width={200} height={200} alt={author.name} />}
-                        </Link>
-                    </HoverCardContent>
-                </HoverCard>
-            )}
-        </>
-    )
-
-}
-
 
 
 function BookCard({ book, author, rating }: { book: Book, author?: Author, rating?: number }) {
@@ -177,7 +148,7 @@ function BookCard({ book, author, rating }: { book: Book, author?: Author, ratin
                                 </span>
                             </CardTitle>
                             <CardDescription>
-                                {author != null ? <AuthorPreview author={author} /> : <span className="text-muted-foreground">Unknown author</span>}
+                                {author != null ? <span className="text-muted-foreground">{author.name}</span> : <span className="text-muted-foreground">Unknown author</span>}
                             </CardDescription>
                         </div>
                         {book.coverImage && (

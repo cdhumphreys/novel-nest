@@ -39,10 +39,12 @@ export default async function BookPage({ params }: { params: { id: string } }) {
 
     const { data: author, error: authorsError } = await getAuthor(book.authorId);
 
+    const rating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
+
     return (
         <div className="container pt-10 pb-20 flex flex-col gap-10 lg:grid lg:grid-cols-[400px_minmax(0,60ch)] lg:gap-10 lg:mx-auto lg:w-fit">
             <div className="lg:sticky lg:top-10">
-                <BookDetails book={book} author={author || undefined} />
+                <BookDetails book={book} author={author || undefined} rating={rating} />
             </div>
             <div className="flex flex-col gap-10">
                 <BookDescription book={book} />
