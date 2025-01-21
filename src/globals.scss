@@ -109,29 +109,4 @@
             }
         }
     }
-
-    .spotlight {
-        background-attachment: fixed;
-        background-repeat: no-repeat;
-
-        @media (prefers-reduced-motion: no-preference) {
-            html.dark & {
-                // sky 600
-                background-image: radial-gradient(
-                    circle at var(--translate-x) var(--translate-y),
-                    hsl(200 98% 39% / 0.5),
-                    transparent 300px
-                );
-            }
-
-            html.light & {
-                // Amber 400
-                background-image: radial-gradient(
-                    circle at var(--translate-x) var(--translate-y),
-                    hsl(46 97% 65% / 0.5),
-                    transparent 300px
-                );
-            }
-        }
-    }
 }

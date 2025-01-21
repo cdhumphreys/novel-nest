@@ -5,7 +5,6 @@ import { getBooks } from "@/server/actions/books";
 import { getAuthors } from "@/server/actions/authors";
 import { Author } from "@/lib/types";
 import { getReviews } from "@/server/actions/reviews";
-import Spotlight from "@/components/spotlight";
 
 export default async function Home() {
     const { data: books, error } = await getBooks();
@@ -28,18 +27,21 @@ export default async function Home() {
             latestBookAuthors.add(author);
         }
     });
-    const latestBookReviews = reviews.filter((review) => latestBooks.some((book) => book.id === review.bookId));
+    const latestBookReviews = reviews.filter((review) =>
+        latestBooks.some((book) => book.id === review.bookId)
+    );
     return (
-
-        <Spotlight className="flex flex-1">
-            <div className="container">
-                <BookList title="New Releases" books={latestBooks} authors={Array.from(latestBookAuthors)} reviews={latestBookReviews}>
-                    <Button variant="link" asChild>
-                        <Link href="/books">View All</Link>
-                    </Button>
-                </BookList>
-            </div>
-        </Spotlight>
-
+        <div className="container">
+            <BookList
+                title="New Releases"
+                books={latestBooks}
+                authors={Array.from(latestBookAuthors)}
+                reviews={latestBookReviews}
+            >
+                <Button variant="link" asChild>
+                    <Link href="/books">View All</Link>
+                </Button>
+            </BookList>
+        </div>
     );
 }
