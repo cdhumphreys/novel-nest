@@ -239,8 +239,8 @@ export default function BookList({
         };
     });
     return (
-        <div className="flex flex-col gap-5">
-            <div className="py-6 flex flex-col gap-8">
+        <div className="flex flex-col gap-5 py-8 lg:py-10">
+            <div className="pb-6 flex flex-col gap-8">
                 <div className="flex justify-between gap-5 items-center">
                     <h2 className="text-2xl font-bold font-serif lg:text-4xl">
                         {title}
