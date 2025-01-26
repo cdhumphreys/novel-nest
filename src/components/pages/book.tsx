@@ -16,11 +16,11 @@ import Avatar from "boring-avatars";
 
 function BookActions() {
     return (
-        <div className="flex gap-2">
-            <Button variant={"default"} size={"lg"}>
+        <div className="flex flex-col sm:flex-row gap-4 w-full">
+            <Button variant={"default"} size={"lg"} className="sm:flex-1">
                 Add to wishlist
             </Button>
-            <Button variant={"outline"} size={"lg"}>
+            <Button variant={"outline"} size={"lg"} className="sm:flex-1">
                 Leave a review
             </Button>
         </div>
@@ -37,25 +37,23 @@ function BookHeader({
     children?: React.ReactNode;
 }) {
     return (
-        <div className="flex flex-col gap-2 items-center px-6 py-4 rounded-tl-lg rounded-br-lg rounded-tr-3xl rounded-bl-3xl bg-secondary text-secondary-foreground w-full">
-            <div className="flex flex-col items-center text-center">
-                <h1 className="text-2xl font-serif lg:text-4xl font-bold">
-                    {title}
-                </h1>
-                {author ? (
-                    <Link
-                        href={`/authors/${author.id}`}
-                        className="text-sm lg:text-base text-foreground/50 hover:underline"
-                    >
-                        {author.name}
-                    </Link>
-                ) : (
-                    <p className="text-sm lg:text-base text-gray-500">
-                        Unknown Author
-                    </p>
-                )}
-            </div>
+        <div className="flex flex-col gap-1 items-start w-full">
             {children}
+            <h1 className="text-2xl font-serif lg:text-4xl">
+                {title}
+            </h1>
+            {author ? (
+                <Link
+                    href={`/authors/${author.id}`}
+                    className="text-xs lg:text-base text-foreground/50 hover:underline"
+                >
+                    {author.name}
+                </Link>
+            ) : (
+                <p className="text-xs lg:text-base text-gray-500">
+                    Unknown Author
+                </p>
+            )}
         </div>
     );
 }
@@ -74,25 +72,25 @@ function BookDetails({
             stickyMode="desktop"
             className="flex flex-col items-center gap-10"
         >
-            <div className="flex flex-col gap-2 items-center lg:items-start">
-                <BookHeader title={book.title} author={author}>
-                    {rating && (
-                        <span className="flex items-center gap-1 text-xs">
-                            <StarIcon
-                                className={`w-3 h-3 text-transparent fill-`}
-                            />
-                            {rating.toFixed(1)}
-                        </span>
-                    )}
-                </BookHeader>
-            </div>
+
+            <BookHeader title={book.title} author={author}>
+                {rating && (
+                    <span className="bg-secondary flex items-center gap-1 text-xs px-2 py-1 rounded-full">
+                        <StarIcon
+                            className={`w-3 h-3 text-transparent fill-primary`}
+                        />
+                        {rating.toFixed(1)}
+                    </span>
+                )}
+            </BookHeader>
+
             {book.coverImage ? (
                 <Image
                     src={book.coverImage}
                     alt={book.title}
                     width={200}
                     height={300}
-                    className="rounded-lg"
+                    className="rounded-lg mx-auto"
                 />
             ) : (
                 <div className="relative rounded-lg bg-secondary flex items-center justify-center aspect-[2/3] w-[200px]">
@@ -123,7 +121,7 @@ function BookReviews({ reviews }: { reviews: Review[] }) {
     const averageRating =
         reviews.length > 0
             ? reviews.reduce((acc, review) => acc + review.rating, 0) /
-              reviews.length
+            reviews.length
             : 0;
     return (
         <div className="flex flex-col gap-5">
