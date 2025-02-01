@@ -1,6 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { Menu, CircleUser, LibraryBig, BookOpen, LogIn, LogOut } from "lucide-react";
+
+import ThemeToggle from "./theme-toggle";
+
 import type { ButtonVariant } from "./ui/button";
 import { Button } from "./ui/button";
 import {
@@ -10,11 +14,13 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Bars3Icon } from "@heroicons/react/16/solid";
-import { CircleUser, LibraryBig, BookOpen, BookUser } from "lucide-react";
 import { cn } from "@/lib/utils";
-import ThemeToggle from "./theme-toggle";
+import { getCurrentUser } from "@/authentication/utils";
 
+// import Register from "./register-form";
+// import { Dialog } from "@/components/ui/dialog";
+
+const loggedIn = getCurrentUser();
 
 const NavButton = ({
     text,
@@ -50,7 +56,7 @@ const MobileMenu = () => {
         <div className="lg:hidden flex">
             <DropdownMenu>
                 <DropdownMenuTrigger>
-                    <Bars3Icon className="h-6 w-6" />
+                    <Menu className="h-6 w-6" />
                     <span className="sr-only">Open Menu</span>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent collisionPadding={10}>
@@ -63,34 +69,59 @@ const MobileMenu = () => {
                             className="grow justify-start"
                         />
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <NavButton
-                            href="/authors"
-                            text="Authors"
-                            icon={BookUser}
-                            variant="link"
-                            className="grow justify-start"
-                        />
-                    </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem>
-                        <NavButton
-                            href="/my-profile"
-                            text="My Profile"
-                            icon={CircleUser}
-                            className="grow justify-start"
-                            variant="secondary"
-                        />
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                        <NavButton
-                            href="/my-library"
-                            text="My Library"
-                            icon={LibraryBig}
-                            className="grow justify-start"
-                            variant="secondary"
-                        />
-                    </DropdownMenuItem>
+                    {loggedIn ? (
+                        <>
+                            <DropdownMenuItem>
+                                <NavButton
+                                    href="/my-profile"
+                                    text="My Profile"
+                                    icon={CircleUser}
+                                    className="grow justify-start"
+                                    variant="secondary"
+                                />
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <NavButton
+                                    href="/my-library"
+                                    text="My Library"
+                                    icon={LibraryBig}
+                                    className="grow justify-start"
+                                    variant="secondary"
+                                />
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <NavButton
+                                    href="/logout"
+                                    text="Logout"
+                                    icon={LogOut}
+                                    className="grow justify-start"
+                                    variant="secondary"
+                                />
+                            </DropdownMenuItem>
+                        </>
+                    ) : (
+                        <>
+                            <DropdownMenuItem>
+                                <NavButton
+                                    href="/login"
+                                    text="Login"
+                                    icon={LogIn}
+                                    className="grow justify-start"
+                                    variant="secondary"
+                                />
+                            </DropdownMenuItem>
+                            <DropdownMenuItem>
+                                <NavButton
+                                    href="/register"
+                                    text="Register"
+                                    icon={CircleUser}
+                                    className="grow justify-start"
+                                    variant="default"
+                                />
+                            </DropdownMenuItem>
+                        </>
+                    )}
                 </DropdownMenuContent>
             </DropdownMenu>
         </div>
@@ -123,33 +154,50 @@ export default function Header() {
                             variant="link"
                             className="w-full justify-start"
                         />
-                        <NavButton
-                            href="/authors"
-                            text="Authors"
-                            icon={BookUser}
-                            className="w-full justify-start"
-                            variant="link"
-                        />
                     </div>
                     {/* Spacer */}
                     <div className="hidden lg:flex flex-[1]"></div>
                     <div className="hidden lg:flex items-center gap-5">
-                        <NavButton
-                            href="/my-library"
-                            text="My Library"
-                            icon={LibraryBig}
-                            className="grow justify-start"
-                            variant="secondary"
+                        {loggedIn ? (
+                            <>
+                                <NavButton
+                                    href="/my-library"
+                                    text="My Library"
+                                    icon={LibraryBig}
+                                    className="grow justify-start"
+                                    variant="secondary"
 
-                        />
-                        <NavButton
-                            href="/my-profile"
-                            text="My Profile"
-                            icon={CircleUser}
-                            className="grow justify-start"
-                            variant="secondary"
-
-                        />
+                                />
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    className="grow justify-start"
+                                    asChild
+                                >
+                                    <Link href="/my-profile">
+                                        <span className="sr-only">Profile</span>
+                                        <CircleUser />
+                                    </Link>
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <NavButton
+                                    href="/login"
+                                    text="Login"
+                                    icon={LogIn}
+                                    className="grow justify-start"
+                                    variant="secondary"
+                                />
+                                <NavButton
+                                    href="/register"
+                                    text="Register"
+                                    icon={CircleUser}
+                                    className="grow justify-start"
+                                    variant="default"
+                                />
+                            </>
+                        )}
                         <ThemeToggle variant="outline" />
                     </div>
                 </div>

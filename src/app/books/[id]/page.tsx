@@ -48,7 +48,7 @@ export default async function BookPage({ params }: { params: { id: string } }) {
 
     return (
         <div className="container pt-10 pb-20">
-            <div className="max-w-96 lg:max-w-none mx-auto lg:mx-0 flex flex-col gap-10 lg:grid lg:grid-cols-[400px_minmax(0,60ch)] lg:gap-10 lg:mx-auto lg:w-fit">
+            <div className="max-w-96 lg:max-w-none mx-auto flex flex-col gap-10 lg:grid lg:grid-cols-[400px_minmax(0,60ch)] lg:gap-10 lg:w-fit">
                 <div className="lg:sticky lg:top-10">
                     <BookDetails
                         book={book}
