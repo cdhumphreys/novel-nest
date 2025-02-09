@@ -21,14 +21,14 @@ import { Eye } from "lucide-react";
 import { useRef } from "react";
 
 import { signUpAction } from "@/server/actions/authentication";
-import { registerSchema } from "@/lib/schemas/auth";
+import { signUpSchema } from "@/lib/schemas/auth";
 
 
 
 export default function RegisterForm() {
     const passwordRef = useRef<HTMLInputElement>(null);
-    const form = useForm<z.infer<typeof registerSchema>>({
-        resolver: zodResolver(registerSchema),
+    const form = useForm<z.infer<typeof signUpSchema>>({
+        resolver: zodResolver(signUpSchema),
         defaultValues: {
             username: "",
             email: "",
@@ -36,22 +36,27 @@ export default function RegisterForm() {
             terms: false,
             offers: false,
         },
-
     });
 
-    async function onSubmit(values: z.infer<typeof registerSchema>) {
+    async function onSubmit(values: z.infer<typeof signUpSchema>) {
         const formData = new FormData();
         Object.entries(values).forEach(([key, value]) => {
             formData.append(key, value.toString());
         });
         const result = await signUpAction(formData);
-        console.log(result);
+
+        if (result.errors) {
+            for (const [key, value] of Object.entries(result.errors)) {
+                form.setError(key as keyof z.infer<typeof signUpSchema> | 'root', { message: value });
+            }
+        }
     }
 
     return (
         <div className="max-w-md w-full mx-auto flex flex-col gap-4">
             <h2 className="text-xl font-bold text-center">Create your account</h2>
             <Form {...form}>
+                <FormMessage className="text-destructive">{form.formState.errors?.root?.message}</FormMessage>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
                     <FormField
                         control={form.control}
@@ -98,21 +103,18 @@ export default function RegisterForm() {
                         control={form.control}
                         name="terms"
                         render={({ field }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md px-4 py-2">
+                            <FormItem className="flex flex-row flex-wrap items-center gap-x-3 space-y-0 px-4 py-2">
                                 <FormControl>
                                     <Checkbox
                                         className="w-6 h-6"
                                         checked={field.value}
                                         onCheckedChange={field.onChange}
-                                        required
                                     />
                                 </FormControl>
-                                <div className="space-y-1 leading-none">
-                                    <FormLabel>
-                                        I agree to the <Link className="underline font-bold" href="#">terms of service</Link>
-                                    </FormLabel>
-                                    <FormMessage />
-                                </div>
+                                <FormLabel>
+                                    I agree to the <Link className="underline font-bold" href="#">terms of service</Link>
+                                </FormLabel>
+                                <FormMessage className="w-full pt-2" />
                             </FormItem>
                         )}
                     />
@@ -120,7 +122,7 @@ export default function RegisterForm() {
                         control={form.control}
                         name="offers"
                         render={({ field }) => (
-                            <FormItem className="flex flex-row items-center space-x-3 space-y-0 rounded-md px-4 py-2">
+                            <FormItem className="flex flex-row items-center gap-x-3 px-4 py-2">
                                 <FormControl>
                                     <Checkbox
                                         className="w-6 h-6"
@@ -128,12 +130,10 @@ export default function RegisterForm() {
                                         onCheckedChange={field.onChange}
                                     />
                                 </FormControl>
-                                <div className="space-y-1 leading-none">
-                                    <FormLabel>
-                                        I want to receive offers and updates via email.
-                                    </FormLabel>
-                                    <FormMessage />
-                                </div>
+                                <FormLabel>
+                                    I want to receive offers and updates via email.
+                                </FormLabel>
+                                <FormMessage />
                             </FormItem>
                         )}
                     />
@@ -146,6 +146,6 @@ export default function RegisterForm() {
                 <Button type="button" variant="outline" className="w-full">Continue with Google</Button>
                 <Button type="button" variant="outline" className="w-full">Continue with Github</Button>
             </div> */}
-        </div>
+        </div >
     );
 }
