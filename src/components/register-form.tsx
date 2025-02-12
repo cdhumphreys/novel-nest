@@ -1,15 +1,14 @@
 "use client"
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { z } from "zod"
 
 import { Button } from "@/components/ui/button"
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
@@ -18,16 +17,19 @@ import {
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Eye } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 import { signUpAction } from "@/server/actions/authentication";
-import { signUpSchema } from "@/lib/schemas/auth";
+import { signUpSchema, type TSignUpSchema } from "@/lib/schemas/auth";
 
 
 
 export default function RegisterForm() {
+    const router = useRouter();
+    const [passwordVisible, setPasswordVisible] = useState(false);
+
     const passwordRef = useRef<HTMLInputElement>(null);
-    const form = useForm<z.infer<typeof signUpSchema>>({
+    const form = useForm<TSignUpSchema>({
         resolver: zodResolver(signUpSchema),
         defaultValues: {
             username: "",
@@ -38,17 +40,25 @@ export default function RegisterForm() {
         },
     });
 
-    async function onSubmit(values: z.infer<typeof signUpSchema>) {
+    async function onSubmit(values: TSignUpSchema) {
         const formData = new FormData();
         Object.entries(values).forEach(([key, value]) => {
             formData.append(key, value.toString());
         });
+
+        await new Promise(resolve => setTimeout(resolve, 3000));
+
         const result = await signUpAction(formData);
 
         if (result.errors) {
             for (const [key, value] of Object.entries(result.errors)) {
-                form.setError(key as keyof z.infer<typeof signUpSchema> | 'root', { message: value });
+                form.setError(key as keyof TSignUpSchema | 'root', { message: value });
             }
+        }
+
+        if (result.success) {
+            form.reset();
+            router.push('/register/verify');
         }
     }
 
@@ -89,8 +99,8 @@ export default function RegisterForm() {
                             <FormItem>
                                 <FormControl>
                                     <div className="relative">
-                                        <Input placeholder="Password" {...field} type="password" ref={passwordRef} autoComplete="new-password" />
-                                        <Button onClick={() => passwordRef.current!.type = (passwordRef.current!.type === "password" ? "text" : "password")} type="button" variant="outline" size="icon" className="absolute right-0 top-1/2 -translate-y-1/2 ">
+                                        <Input placeholder="Password" {...field} type={passwordVisible ? "text" : "password"} ref={passwordRef} autoComplete="new-password" />
+                                        <Button onClick={() => setPasswordVisible(!passwordVisible)} type="button" variant="outline" size="icon" className="absolute right-0 top-1/2 -translate-y-1/2 ">
                                             <Eye />
                                         </Button>
                                     </div>
@@ -112,7 +122,7 @@ export default function RegisterForm() {
                                     />
                                 </FormControl>
                                 <FormLabel>
-                                    I agree to the <Link className="underline font-bold" href="#">terms of service</Link>
+                                    I agree to the <Link className="underline font-bold" href="/terms" target="_blank">terms of service</Link>
                                 </FormLabel>
                                 <FormMessage className="w-full pt-2" />
                             </FormItem>
@@ -137,7 +147,7 @@ export default function RegisterForm() {
                             </FormItem>
                         )}
                     />
-                    <Button type="submit" className="mt-2 w-full">Sign up with email</Button>
+                    <Button disabled={form.formState.isSubmitting} type="submit" className="mt-2 w-full">{form.formState.isSubmitting ? 'Signing up...' : 'Sign up with email'}</Button>
                 </form>
             </Form>
             <p className="text-center mt-5">Already have an account? <Link href="/login" className="underline font-bold">Login</Link></p>
