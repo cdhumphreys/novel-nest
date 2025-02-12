@@ -1,86 +1,16 @@
 import { boolean, integer, pgTable, primaryKey, serial, text, timestamp, varchar } from "drizzle-orm/pg-core"
 import { relations } from "drizzle-orm";
-import type { AdapterAccountType } from "next-auth/adapters";
 
 
-/* Added for SSO Auth providers START */
-export const users = pgTable("nn_users", {
-    id: text("id")
-        .primaryKey()
-        .$defaultFn(() => crypto.randomUUID()),
-    name: text("name"),
-    email: text("email").unique(),
-    emailVerified: timestamp("emailVerified", { mode: "date" }),
-    image: text("image"),
-})
-
-export const accounts = pgTable(
-    "nn_accounts",
-    {
-        userId: text("userId")
-            .notNull()
-            .references(() => users.id, { onDelete: "cascade" }),
-        type: text("type").$type<AdapterAccountType>().notNull(),
-        provider: text("provider").notNull(),
-        providerAccountId: text("providerAccountId").notNull(),
-        refresh_token: text("refresh_token"),
-        access_token: text("access_token"),
-        expires_at: integer("expires_at"),
-        token_type: text("token_type"),
-        scope: text("scope"),
-        id_token: text("id_token"),
-        session_state: text("session_state"),
-    },
-    (account) => ({
-        compoundKey: primaryKey({
-            columns: [account.provider, account.providerAccountId],
-        }),
-    })
-)
-
-export const sessions = pgTable("nn_sessions", {
-    sessionToken: text("sessionToken").primaryKey(),
-    userId: text("userId")
-        .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
-})
-
-export const verificationTokens = pgTable(
-    "nn_verificationTokens",
-    {
-        identifier: text("identifier").notNull(),
-        token: text("token").notNull(),
-        expires: timestamp("expires", { mode: "date" }).notNull(),
-    },
-    (verificationToken) => ({
-        compositePk: primaryKey({
-            columns: [verificationToken.identifier, verificationToken.token],
-        }),
-    })
-)
-
-export const authenticators = pgTable(
-    "nn_authenticators",
-    {
-        credentialID: text("credentialID").notNull().unique(),
-        userId: text("userId")
-            .notNull()
-            .references(() => users.id, { onDelete: "cascade" }),
-        providerAccountId: text("providerAccountId").notNull(),
-        credentialPublicKey: text("credentialPublicKey").notNull(),
-        counter: integer("counter").notNull(),
-        credentialDeviceType: text("credentialDeviceType").notNull(),
-        credentialBackedUp: boolean("credentialBackedUp").notNull(),
-        transports: text("transports"),
-    },
-    (authenticator) => ({
-        compositePK: primaryKey({
-            columns: [authenticator.userId, authenticator.credentialID],
-        }),
-    })
-)
-/* Added for SSO Auth providers END */
+// Auth tables
+export const users = pgTable('nn_users', {
+    id: serial('id').primaryKey(),
+    email: text('email').unique().notNull(),
+    passwordHash: text('password_hash').notNull(),
+    emailVerified: boolean('email_verified').$default(() => false),
+    createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
+    updatedAt: timestamp('updated_at', { mode: 'date' }).$onUpdate(() => new Date()),
+});
 
 export const profiles = pgTable('nn_profiles', {
     id: serial('id').primaryKey(),
@@ -90,11 +20,41 @@ export const profiles = pgTable('nn_profiles', {
     dateOfDeath: timestamp('date_of_death', { mode: 'date' }),
     username: text('username').unique().notNull(),
     bio: text('bio'),
-    userId: text("userId")
+    userId: integer("user_id")
         .notNull()
         .references(() => users.id, { onDelete: "cascade" }),
 });
 
+export const session = pgTable('nn_session', {
+    id: serial('id').primaryKey(),
+    userId: integer("user_id")
+        .notNull()
+        .references(() => users.id, { onDelete: "cascade" }),
+    expiresAt: timestamp('expires_at', { mode: 'date' }).notNull(),
+});
+
+export const emailVerifications = pgTable('nn_email_verifications', {
+    id: serial('id').primaryKey(),
+    userId: integer("user_id")
+        .notNull()
+        .references(() => users.id, { onDelete: "cascade" }),
+    expiresAt: timestamp('expires_at', { mode: 'date' }).notNull(),
+    email: text('email').notNull(),
+});
+
+export const passwordResetSessions = pgTable('nn_password_reset_sessions', {
+    id: serial('id').primaryKey(),
+    userId: integer("user_id")
+        .notNull()
+        .references(() => users.id, { onDelete: "cascade" }),
+    expiresAt: timestamp('expires_at', { mode: 'date' }).notNull(),
+    email: text('email').notNull(),
+    code: text('code').notNull(),
+    emailVerified: boolean('email_verified').$default(() => false),
+});
+
+
+// Content tables
 export const publishers = pgTable('nn_publishers', {
     id: serial('id').primaryKey(),
     name: varchar('name', { length: 256 }).notNull(),
@@ -107,7 +67,7 @@ export const books = pgTable('nn_books', {
     published: timestamp('published', { mode: 'date' }),
     publishedBy: integer('publisher_id').references(() => publishers.id, { onDelete: 'set null' }),
     numPages: integer('num_pages'),
-    authorId: text("userId")
+    authorId: integer("user_id")
         .notNull()
         .references(() => users.id, { onDelete: "cascade" }),
 })
@@ -117,7 +77,7 @@ export const reviews = pgTable('nn_reviews', {
     bookId: integer('book_id').notNull().references(() => books.id, { onDelete: 'cascade' }),
     rating: integer('rating').notNull(),
     review: text('review').notNull(),
-    userId: text("userId")
+    userId: integer("user_id")
         .notNull()
         .references(() => users.id, { onDelete: "cascade" }),
     createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
@@ -126,7 +86,7 @@ export const reviews = pgTable('nn_reviews', {
 
 export const reviewComments = pgTable('nn_review_comments', {
     id: serial('id').primaryKey(),
-    userId: text("userId")
+    userId: integer("user_id")
         .notNull()
         .references(() => users.id, { onDelete: "cascade" }),
     createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
@@ -145,7 +105,7 @@ export const bookClubs = pgTable('nn_book_clubs', {
 });
 
 export const usersToClubs = pgTable('nn_users_to_clubs', {
-    userId: text('user_id').notNull().references(() => users.id),
+    userId: integer('user_id').notNull().references(() => users.id),
     clubId: integer('club_id').notNull().references(() => bookClubs.id)
 }, (t) => ({
     pk: primaryKey({ columns: [t.userId, t.clubId] }),

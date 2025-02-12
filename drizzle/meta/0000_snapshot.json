@@ -1,194 +1,62 @@
 {
-  "id": "d8134a32-3614-4014-87b9-bf60b0a587f2",
+  "id": "513f75a3-91a4-417f-9bc8-392c2958f7af",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.nn_accounts": {
-      "name": "nn_accounts",
+    "public.nn_book_clubs": {
+      "name": "nn_book_clubs",
       "schema": "",
       "columns": {
-        "userId": {
-          "name": "userId",
-          "type": "text",
-          "primaryKey": false,
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
           "notNull": true
         },
-        "type": {
-          "name": "type",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "provider": {
-          "name": "provider",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "providerAccountId": {
-          "name": "providerAccountId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "refresh_token": {
-          "name": "refresh_token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "access_token": {
-          "name": "access_token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "expires_at": {
-          "name": "expires_at",
+        "current_book_id": {
+          "name": "current_book_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
-        "token_type": {
-          "name": "token_type",
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "scope": {
-          "name": "scope",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "id_token": {
-          "name": "id_token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "session_state": {
-          "name": "session_state",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        }
-      },
-      "indexes": {},
-      "foreignKeys": {
-        "nn_accounts_userId_nn_users_id_fk": {
-          "name": "nn_accounts_userId_nn_users_id_fk",
-          "tableFrom": "nn_accounts",
-          "tableTo": "nn_users",
-          "columnsFrom": [
-            "userId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {
-        "nn_accounts_provider_providerAccountId_pk": {
-          "name": "nn_accounts_provider_providerAccountId_pk",
-          "columns": [
-            "provider",
-            "providerAccountId"
-          ]
-        }
-      },
-      "uniqueConstraints": {}
-    },
-    "public.nn_authenticators": {
-      "name": "nn_authenticators",
-      "schema": "",
-      "columns": {
-        "credentialID": {
-          "name": "credentialID",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "userId": {
-          "name": "userId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "providerAccountId": {
-          "name": "providerAccountId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "credentialPublicKey": {
-          "name": "credentialPublicKey",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "counter": {
-          "name": "counter",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "credentialDeviceType": {
-          "name": "credentialDeviceType",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "credentialBackedUp": {
-          "name": "credentialBackedUp",
+        "is_private": {
+          "name": "is_private",
           "type": "boolean",
           "primaryKey": false,
-          "notNull": true
-        },
-        "transports": {
-          "name": "transports",
-          "type": "text",
-          "primaryKey": false,
           "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "nn_authenticators_userId_nn_users_id_fk": {
-          "name": "nn_authenticators_userId_nn_users_id_fk",
-          "tableFrom": "nn_authenticators",
-          "tableTo": "nn_users",
+        "nn_book_clubs_current_book_id_nn_books_id_fk": {
+          "name": "nn_book_clubs_current_book_id_nn_books_id_fk",
+          "tableFrom": "nn_book_clubs",
+          "tableTo": "nn_books",
           "columnsFrom": [
-            "userId"
+            "current_book_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "cascade",
+          "onDelete": "set null",
           "onUpdate": "no action"
         }
       },
-      "compositePrimaryKeys": {
-        "nn_authenticators_userId_credentialID_pk": {
-          "name": "nn_authenticators_userId_credentialID_pk",
-          "columns": [
-            "userId",
-            "credentialID"
-          ]
-        }
-      },
-      "uniqueConstraints": {
-        "nn_authenticators_credentialID_unique": {
-          "name": "nn_authenticators_credentialID_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "credentialID"
-          ]
-        }
-      }
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
     },
     "public.nn_books": {
       "name": "nn_books",
@@ -202,7 +70,7 @@
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true
         },
@@ -218,14 +86,20 @@
           "primaryKey": false,
           "notNull": false
         },
+        "publisher_id": {
+          "name": "publisher_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "num_pages": {
           "name": "num_pages",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
         },
-        "userId": {
-          "name": "userId",
+        "user_id": {
+          "name": "user_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -233,12 +107,133 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "nn_books_userId_nn_users_id_fk": {
-          "name": "nn_books_userId_nn_users_id_fk",
+        "nn_books_publisher_id_nn_publishers_id_fk": {
+          "name": "nn_books_publisher_id_nn_publishers_id_fk",
+          "tableFrom": "nn_books",
+          "tableTo": "nn_publishers",
+          "columnsFrom": [
+            "publisher_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        },
+        "nn_books_user_id_nn_users_id_fk": {
+          "name": "nn_books_user_id_nn_users_id_fk",
           "tableFrom": "nn_books",
           "tableTo": "nn_users",
           "columnsFrom": [
-            "userId"
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.nn_email_verifications": {
+      "name": "nn_email_verifications",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "nn_email_verifications_user_id_nn_users_id_fk": {
+          "name": "nn_email_verifications_user_id_nn_users_id_fk",
+          "tableFrom": "nn_email_verifications",
+          "tableTo": "nn_users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
+    "public.nn_password_reset_sessions": {
+      "name": "nn_password_reset_sessions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code": {
+          "name": "code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_verified": {
+          "name": "email_verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "nn_password_reset_sessions_user_id_nn_users_id_fk": {
+          "name": "nn_password_reset_sessions_user_id_nn_users_id_fk",
+          "tableFrom": "nn_password_reset_sessions",
+          "tableTo": "nn_users",
+          "columnsFrom": [
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -296,8 +291,8 @@
           "primaryKey": false,
           "notNull": false
         },
-        "userId": {
-          "name": "userId",
+        "user_id": {
+          "name": "user_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -305,12 +300,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "nn_profiles_userId_nn_users_id_fk": {
-          "name": "nn_profiles_userId_nn_users_id_fk",
+        "nn_profiles_user_id_nn_users_id_fk": {
+          "name": "nn_profiles_user_id_nn_users_id_fk",
           "tableFrom": "nn_profiles",
           "tableTo": "nn_users",
           "columnsFrom": [
-            "userId"
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -342,7 +337,7 @@
         },
         "name": {
           "name": "name",
-          "type": "text",
+          "type": "varchar(256)",
           "primaryKey": false,
           "notNull": true
         }
@@ -362,8 +357,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "userId": {
-          "name": "userId",
+        "user_id": {
+          "name": "user_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -390,12 +385,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "nn_review_comments_userId_nn_users_id_fk": {
-          "name": "nn_review_comments_userId_nn_users_id_fk",
+        "nn_review_comments_user_id_nn_users_id_fk": {
+          "name": "nn_review_comments_user_id_nn_users_id_fk",
           "tableFrom": "nn_review_comments",
           "tableTo": "nn_users",
           "columnsFrom": [
-            "userId"
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -430,6 +425,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "book_id": {
+          "name": "book_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
         "rating": {
           "name": "rating",
           "type": "integer",
@@ -442,8 +443,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "userId": {
-          "name": "userId",
+        "user_id": {
+          "name": "user_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -464,12 +465,25 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "nn_reviews_userId_nn_users_id_fk": {
-          "name": "nn_reviews_userId_nn_users_id_fk",
+        "nn_reviews_book_id_nn_books_id_fk": {
+          "name": "nn_reviews_book_id_nn_books_id_fk",
+          "tableFrom": "nn_reviews",
+          "tableTo": "nn_books",
+          "columnsFrom": [
+            "book_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "nn_reviews_user_id_nn_users_id_fk": {
+          "name": "nn_reviews_user_id_nn_users_id_fk",
           "tableFrom": "nn_reviews",
           "tableTo": "nn_users",
           "columnsFrom": [
-            "userId"
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -481,24 +495,24 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}
     },
-    "public.nn_sessions": {
-      "name": "nn_sessions",
+    "public.nn_session": {
+      "name": "nn_session",
       "schema": "",
       "columns": {
-        "sessionToken": {
-          "name": "sessionToken",
-          "type": "text",
+        "id": {
+          "name": "id",
+          "type": "serial",
           "primaryKey": true,
           "notNull": true
         },
-        "userId": {
-          "name": "userId",
+        "user_id": {
+          "name": "user_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "expires": {
-          "name": "expires",
+        "expires_at": {
+          "name": "expires_at",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true
@@ -506,12 +520,12 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "nn_sessions_userId_nn_users_id_fk": {
-          "name": "nn_sessions_userId_nn_users_id_fk",
-          "tableFrom": "nn_sessions",
+        "nn_session_user_id_nn_users_id_fk": {
+          "name": "nn_session_user_id_nn_users_id_fk",
+          "tableFrom": "nn_session",
           "tableTo": "nn_users",
           "columnsFrom": [
-            "userId"
+            "user_id"
           ],
           "columnsTo": [
             "id"
@@ -529,31 +543,38 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "text",
+          "type": "serial",
           "primaryKey": true,
           "notNull": true
-        },
-        "name": {
-          "name": "name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
         },
         "email": {
           "name": "email",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
-        "emailVerified": {
-          "name": "emailVerified",
-          "type": "timestamp",
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_verified": {
+          "name": "email_verified",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": false
         },
-        "image": {
-          "name": "image",
-          "type": "text",
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
           "primaryKey": false,
           "notNull": false
         }
@@ -571,37 +592,58 @@
         }
       }
     },
-    "public.nn_verificationTokens": {
-      "name": "nn_verificationTokens",
+    "public.nn_users_to_clubs": {
+      "name": "nn_users_to_clubs",
       "schema": "",
       "columns": {
-        "identifier": {
-          "name": "identifier",
+        "user_id": {
+          "name": "user_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "token": {
-          "name": "token",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "expires": {
-          "name": "expires",
-          "type": "timestamp",
+        "club_id": {
+          "name": "club_id",
+          "type": "integer",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
-      "foreignKeys": {},
+      "foreignKeys": {
+        "nn_users_to_clubs_user_id_nn_users_id_fk": {
+          "name": "nn_users_to_clubs_user_id_nn_users_id_fk",
+          "tableFrom": "nn_users_to_clubs",
+          "tableTo": "nn_users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "nn_users_to_clubs_club_id_nn_book_clubs_id_fk": {
+          "name": "nn_users_to_clubs_club_id_nn_book_clubs_id_fk",
+          "tableFrom": "nn_users_to_clubs",
+          "tableTo": "nn_book_clubs",
+          "columnsFrom": [
+            "club_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {
-        "nn_verificationTokens_identifier_token_pk": {
-          "name": "nn_verificationTokens_identifier_token_pk",
+        "nn_users_to_clubs_user_id_club_id_pk": {
+          "name": "nn_users_to_clubs_user_id_club_id_pk",
           "columns": [
-            "identifier",
-            "token"
+            "user_id",
+            "club_id"
           ]
         }
       },
