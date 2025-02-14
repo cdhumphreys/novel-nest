@@ -1,10 +1,10 @@
-import RegisterForm from "@/components/register-form";
+import SignUpForm from "./components/sign-up-form";
 
-export default function RegisterPage() {
+export default function SignUpPage() {
     return (
         <div className="container mx-auto">
             <div className="flex flex-col items-center justify-start pt-10 md:pt-20">
-                <RegisterForm />
+                <SignUpForm />
             </div>
         </div>
     );

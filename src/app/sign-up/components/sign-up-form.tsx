@@ -23,8 +23,7 @@ import { signUpAction } from "@/server/actions/authentication";
 import { signUpSchema, type TSignUpSchema } from "@/lib/schemas/auth";
 
 
-
-export default function RegisterForm() {
+export default function SignUpForm() {
     const router = useRouter();
     const [passwordVisible, setPasswordVisible] = useState(false);
 

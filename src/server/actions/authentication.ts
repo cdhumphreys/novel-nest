@@ -1,6 +1,12 @@
 'use server'
 
 import { signUpSchema, loginSchema } from "@/lib/schemas/auth";
+import { getUserByEmail, createUser } from "@/lib/users";
+import { createProfile, getProfileByUsername } from "@/lib/profiles";
+
+import { setSession } from "@/lib/sessions";
+import { hashPassword } from "@/lib/auth";
+
 
 export async function signUpAction(formData: unknown) {
     if (!(formData instanceof FormData)) {
@@ -20,19 +26,35 @@ export async function signUpAction(formData: unknown) {
     }
     const { username, email, password, terms, offers } = parsed.data
 
-    return { success: true }
 
-    // TODO: Check if user already exists
-    // TODO: Create user in database
+    // Check if user already exists
+    const user = await getUserByEmail(email);
+    if (user) {
+        return { errors: { email: 'User already exists' } }
+    }
+
+    // Check if username already exists
+    const profile = await getProfileByUsername(username);
+    if (profile) {
+        return { errors: { username: 'Username already exists' } }
+    }
+
+    // Create user in database
+    const newUser = await createUser(email, password);
+    await createProfile(username, newUser.id);
+    await setSession(newUser.id);
+
     // TODO: Send verification email
-    // TODO: Redirect to verification page
 
+    return { success: true };
 }
 
 export async function loginAction(formData: unknown) {
     if (!(formData instanceof FormData)) {
         return { errors: { root: 'Invalid form data' } }
     }
+
+    // TODO: Rate limit login attempts
 
     const data = Object.fromEntries(formData.entries());
     const parsed = loginSchema.safeParse({ ...data });
@@ -43,8 +65,16 @@ export async function loginAction(formData: unknown) {
 
     const { email, password } = parsed.data
 
-    // TODO: Check if user exists
-    // TODO: Check if password is correct
-    // TODO: Redirect to dashboard
+
+    const user = await getUserByEmail(email);
+    if (!user) {
+        return { errors: { email: 'User does not exist' } }
+    }
+    const enteredPasswordHash = await hashPassword(password, user.salt);
+    if (user.passwordHash !== enteredPasswordHash) {
+        return { errors: { password: 'Incorrect password' } }
+    }
+
+    await setSession(user.id);
     return { success: true }
 }

@@ -3,16 +3,17 @@ import { relations } from "drizzle-orm";
 
 
 // Auth tables
-export const users = pgTable('nn_users', {
+export const usersTable = pgTable('nn_users', {
     id: serial('id').primaryKey(),
     email: text('email').unique().notNull(),
     passwordHash: text('password_hash').notNull(),
+    salt: text('salt').notNull(),
     emailVerified: boolean('email_verified').$default(() => false),
     createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { mode: 'date' }).$onUpdate(() => new Date()),
 });
 
-export const profiles = pgTable('nn_profiles', {
+export const profilesTable = pgTable('nn_profiles', {
     id: serial('id').primaryKey(),
     age: integer('age'),
     joinedDate: timestamp('joined_date', { mode: 'date' }),
@@ -22,31 +23,31 @@ export const profiles = pgTable('nn_profiles', {
     bio: text('bio'),
     userId: integer("user_id")
         .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
+        .references(() => usersTable.id, { onDelete: "cascade" }),
 });
 
-export const session = pgTable('nn_session', {
-    id: serial('id').primaryKey(),
+export const sessionsTable = pgTable('nn_sessions', {
+    id: text('id').primaryKey(),
     userId: integer("user_id")
         .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
+        .references(() => usersTable.id, { onDelete: "cascade" }),
     expiresAt: timestamp('expires_at', { mode: 'date' }).notNull(),
 });
 
-export const emailVerifications = pgTable('nn_email_verifications', {
+export const emailVerificationsTable = pgTable('nn_email_verifications', {
     id: serial('id').primaryKey(),
     userId: integer("user_id")
         .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
+        .references(() => usersTable.id, { onDelete: "cascade" }),
     expiresAt: timestamp('expires_at', { mode: 'date' }).notNull(),
     email: text('email').notNull(),
 });
 
-export const passwordResetSessions = pgTable('nn_password_reset_sessions', {
+export const passwordResetSessionsTable = pgTable('nn_password_reset_sessions', {
     id: serial('id').primaryKey(),
     userId: integer("user_id")
         .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
+        .references(() => usersTable.id, { onDelete: "cascade" }),
     expiresAt: timestamp('expires_at', { mode: 'date' }).notNull(),
     email: text('email').notNull(),
     code: text('code').notNull(),
@@ -55,146 +56,118 @@ export const passwordResetSessions = pgTable('nn_password_reset_sessions', {
 
 
 // Content tables
-export const publishers = pgTable('nn_publishers', {
+export const publishersTable = pgTable('nn_publishers', {
     id: serial('id').primaryKey(),
     name: varchar('name', { length: 256 }).notNull(),
 });
 
-export const books = pgTable('nn_books', {
+export const booksTable = pgTable('nn_books', {
     id: serial('id').primaryKey(),
     name: varchar('name', { length: 256 }).notNull(),
     description: text('description').notNull(),
     published: timestamp('published', { mode: 'date' }),
-    publishedBy: integer('publisher_id').references(() => publishers.id, { onDelete: 'set null' }),
+    publishedBy: integer('publisher_id').references(() => publishersTable.id, { onDelete: 'set null' }),
     numPages: integer('num_pages'),
     authorId: integer("user_id")
         .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
+        .references(() => usersTable.id, { onDelete: "cascade" }),
 })
 
-export const reviews = pgTable('nn_reviews', {
+export const reviewsTable = pgTable('nn_reviews', {
     id: serial('id').primaryKey(),
-    bookId: integer('book_id').notNull().references(() => books.id, { onDelete: 'cascade' }),
+    bookId: integer('book_id').notNull().references(() => booksTable.id, { onDelete: 'cascade' }),
     rating: integer('rating').notNull(),
     review: text('review').notNull(),
     userId: integer("user_id")
         .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
+        .references(() => usersTable.id, { onDelete: "cascade" }),
     createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { mode: 'date' }).$onUpdate(() => new Date()),
 })
 
-export const reviewComments = pgTable('nn_review_comments', {
+export const reviewCommentsTable = pgTable('nn_review_comments', {
     id: serial('id').primaryKey(),
     userId: integer("user_id")
         .notNull()
-        .references(() => users.id, { onDelete: "cascade" }),
+        .references(() => usersTable.id, { onDelete: "cascade" }),
     createdAt: timestamp('created_at', { mode: 'date' }).notNull().defaultNow(),
     updatedAt: timestamp('updated_at', { mode: 'date' }).$onUpdate(() => new Date()),
     reviewId: integer("review_id")
         .notNull()
-        .references(() => reviews.id, { onDelete: "cascade" }),
+        .references(() => reviewsTable.id, { onDelete: "cascade" }),
 })
 
-export const bookClubs = pgTable('nn_book_clubs', {
-    id: serial("id").primaryKey(),
-    currentBookId: integer('current_book_id').references(() => books.id, { onDelete: 'set null' }),
-    name: text("name").notNull(),
-    description: text("description"),
-    isPrivate: boolean("is_private").$default(() => false)
-});
-
-export const usersToClubs = pgTable('nn_users_to_clubs', {
-    userId: integer('user_id').notNull().references(() => users.id),
-    clubId: integer('club_id').notNull().references(() => bookClubs.id)
-}, (t) => ({
-    pk: primaryKey({ columns: [t.userId, t.clubId] }),
-}),)
-
-
-
-
 // Relations
-export const userRelations = relations(users, ({ one, many }) => ({
-    profile: one(profiles),
-    books: many(books),
-    reviews: many(reviews),
-    reviewComments: many(reviewComments),
-    clubs: many(usersToClubs)
+export const userRelationsTable = relations(usersTable, ({ one, many }) => ({
+    sessions: many(sessionsTable),
+    profile: one(profilesTable),
+    books: many(booksTable),
+    reviews: many(reviewsTable),
+    reviewComments: many(reviewCommentsTable),
 }));
 
-export const bookRelations = relations(books, ({ one, many }) => ({
-    author: one(users, {
-        fields: [books.authorId],
-        references: [users.id]
-    }),
-    publisher: one(publishers, {
-        fields: [books.publishedBy],
-        references: [publishers.id]
-    }),
-    reviews: many(reviews)
-}));
-
-export const profileRelations = relations(profiles, ({ one }) => ({
-    user: one(users, {
-        fields: [profiles.userId],
-        references: [users.id]
+export const sessionRelationsTable = relations(sessionsTable, ({ one }) => ({
+    user: one(usersTable, {
+        fields: [sessionsTable.userId],
+        references: [usersTable.id]
     }),
 }));
 
-export const publisherRelations = relations(publishers, ({ one, many }) => ({
-    books: many(books)
+export const bookRelationsTable = relations(booksTable, ({ one, many }) => ({
+    author: one(usersTable, {
+        fields: [booksTable.authorId],
+        references: [usersTable.id]
+    }),
+    publisher: one(publishersTable, {
+        fields: [booksTable.publishedBy],
+        references: [publishersTable.id]
+    }),
+    reviews: many(reviewsTable)
 }));
 
-export const reviewsRelations = relations(reviews, ({ one, many }) => ({
-    book: one(books, {
-        fields: [reviews.bookId],
-        references: [books.id]
-    }),
-    author: one(users, {
-        fields: [reviews.userId],
-        references: [users.id]
-    }),
-    comments: many(reviewComments)
-}));
-export const reviewCommentsRelations = relations(reviewComments, ({ one, many }) => ({
-    author: one(users, {
-        fields: [reviewComments.userId],
-        references: [users.id]
-    }),
-    review: one(reviews, {
-        fields: [reviewComments.reviewId],
-        references: [reviews.id]
+export const profileRelationsTable = relations(profilesTable, ({ one }) => ({
+    user: one(usersTable, {
+        fields: [profilesTable.userId],
+        references: [usersTable.id]
     }),
 }));
 
-export const bookClubRelations = relations(bookClubs, ({ one, many }) => ({
-    currentBook: one(books, {
-        fields: [bookClubs.currentBookId],
-        references: [books.id]
-    }),
-    usersToClubs: many(usersToClubs)
-}))
+export const publisherRelationsTable = relations(publishersTable, ({ one, many }) => ({
+    books: many(booksTable)
+}));
 
-export const usersToGroupsRelations = relations(usersToClubs, ({ one }) => ({
-    club: one(bookClubs, {
-        fields: [usersToClubs.clubId],
-        references: [bookClubs.id],
+export const reviewsRelationsTable = relations(reviewsTable, ({ one, many }) => ({
+    book: one(booksTable, {
+        fields: [reviewsTable.bookId],
+        references: [booksTable.id]
     }),
-    user: one(users, {
-        fields: [usersToClubs.userId],
-        references: [users.id],
+    author: one(usersTable, {
+        fields: [reviewsTable.userId],
+        references: [usersTable.id]
+    }),
+    comments: many(reviewCommentsTable)
+}));
+export const reviewCommentsRelationsTable = relations(reviewCommentsTable, ({ one, many }) => ({
+    author: one(usersTable, {
+        fields: [reviewCommentsTable.userId],
+        references: [usersTable.id]
+    }),
+    review: one(reviewsTable, {
+        fields: [reviewCommentsTable.reviewId],
+        references: [reviewsTable.id]
     }),
 }));
 
 // Type exports
-export type User = typeof users.$inferSelect;
-export type Profile = typeof profiles.$inferSelect;
+export type User = typeof usersTable.$inferSelect;
+export type Session = typeof sessionsTable.$inferSelect;
+export type EmailVerification = typeof emailVerificationsTable.$inferSelect;
+export type PasswordResetSession = typeof passwordResetSessionsTable.$inferSelect;
 
-export type Publisher = typeof publishers.$inferSelect;
-export type Book = typeof books.$inferSelect;
+export type Profile = typeof profilesTable.$inferSelect;
 
-export type Reviews = typeof reviews.$inferSelect;
-export type ReviewComments = typeof reviewComments.$inferSelect;
+export type Publisher = typeof publishersTable.$inferSelect;
+export type Book = typeof booksTable.$inferSelect;
 
-export type BookClubs = typeof bookClubs.$inferSelect;
+export type Reviews = typeof reviewsTable.$inferSelect;
+export type ReviewComments = typeof reviewCommentsTable.$inferSelect;

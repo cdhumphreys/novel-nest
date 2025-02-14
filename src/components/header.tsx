@@ -1,6 +1,5 @@
-"use client";
-
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Menu, CircleUser, LibraryBig, BookOpen, LogIn, LogOut } from "lucide-react";
 
 import ThemeToggle from "./theme-toggle";
@@ -15,12 +14,11 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { getCurrentUser } from "@/authentication/utils";
+import { getCurrentUser, deleteSessionCookie } from "@/lib/sessions";
+import { User } from "@/db/schema";
+import { SignOut } from "./header/sign-out";
 
-// import Register from "./register-form";
-// import { Dialog } from "@/components/ui/dialog";
 
-const loggedIn = getCurrentUser();
 
 const NavButton = ({
     text,
@@ -50,8 +48,13 @@ const NavButton = ({
     );
 };
 
+async function logout() {
+    'use server';
+    await deleteSessionCookie();
+    redirect("/login");
+}
 
-const MobileMenu = () => {
+const MobileMenu = ({ user }: { user: User | null }) => {
     return (
         <div className="lg:hidden flex">
             <DropdownMenu>
@@ -70,7 +73,7 @@ const MobileMenu = () => {
                         />
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    {loggedIn ? (
+                    {user ? (
                         <>
                             <DropdownMenuItem>
                                 <NavButton
@@ -91,13 +94,7 @@ const MobileMenu = () => {
                                 />
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <NavButton
-                                    href="/logout"
-                                    text="Logout"
-                                    icon={LogOut}
-                                    className="grow justify-start"
-                                    variant="secondary"
-                                />
+                                <SignOut onClick={logout} />
                             </DropdownMenuItem>
                         </>
                     ) : (
@@ -113,8 +110,8 @@ const MobileMenu = () => {
                             </DropdownMenuItem>
                             <DropdownMenuItem>
                                 <NavButton
-                                    href="/register"
-                                    text="Register"
+                                    href="/sign-up"
+                                    text="Sign up"
                                     icon={CircleUser}
                                     className="grow justify-start"
                                     variant="default"
@@ -128,7 +125,8 @@ const MobileMenu = () => {
     );
 };
 
-export default function Header() {
+export default async function Header() {
+    const user: User | null = await getCurrentUser();
     return (
         <header className="sticky top-0 z-50 bg-background">
             <div className="container mx-auto py-6">
@@ -142,7 +140,7 @@ export default function Header() {
                     </Link>
                     <div className="flex items-center gap-5 lg:hidden">
                         <ThemeToggle variant="outline" />
-                        <MobileMenu />
+                        <MobileMenu user={user} />
                     </div>
                     {/* Spacer */}
                     <div className="hidden lg:flex flex-[2]"></div>
@@ -158,7 +156,7 @@ export default function Header() {
                     {/* Spacer */}
                     <div className="hidden lg:flex flex-[1]"></div>
                     <div className="hidden lg:flex items-center gap-5">
-                        {loggedIn ? (
+                        {user ? (
                             <>
                                 <NavButton
                                     href="/my-library"
@@ -179,6 +177,7 @@ export default function Header() {
                                         <CircleUser />
                                     </Link>
                                 </Button>
+                                <SignOut onClick={logout} />
                             </>
                         ) : (
                             <>
@@ -190,8 +189,8 @@ export default function Header() {
                                     variant="secondary"
                                 />
                                 <NavButton
-                                    href="/register"
-                                    text="Register"
+                                    href="/sign-up"
+                                    text="Sign up"
                                     icon={CircleUser}
                                     className="grow justify-start"
                                     variant="default"
