@@ -7,7 +7,7 @@ import { Book, Author, Review } from "@/lib/types";
 
 import RatingStars from "@/components/rating-stars";
 import { Button } from "@/components/ui/button";
-import StickyBlock from "../sticky-block";
+import StickyBlock from "@/components/sticky-block";
 import { getHumanReadableDate } from "@/lib/utils";
 
 import { ImageOff, StarIcon } from "lucide-react";

@@ -3,7 +3,7 @@ import {
     BookDescription,
     BookReviews,
     BookAuthor,
-} from "@/components/pages/book";
+} from "./components/book";
 import { getBook } from "@/server/actions/books";
 import { getAuthor } from "@/server/actions/authors";
 import { Button } from "@/components/ui/button";
