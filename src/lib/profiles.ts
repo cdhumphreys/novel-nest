@@ -13,11 +13,15 @@ export async function createProfile(username: string, userId: number): Promise<P
 }
 
 export async function getProfileByUsername(username: string): Promise<Profile | null> {
-    const profile = await db.select().from(profilesTable).where(eq(profilesTable.username, username)).limit(1);
-    return profile.at(0) ?? null;
+    const profile = await db.query.profilesTable.findFirst({
+        where: eq(profilesTable.username, username),
+    });
+    return profile ?? null;
 }
 
 export async function getProfileByUserId(userId: number): Promise<Profile | null> {
-    const profile = await db.select().from(profilesTable).where(eq(profilesTable.userId, userId)).limit(1);
-    return profile.at(0) ?? null;
+    const profile = await db.query.profilesTable.findFirst({
+        where: eq(profilesTable.userId, userId),
+    });
+    return profile ?? null;
 }

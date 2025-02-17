@@ -5,8 +5,10 @@ import crypto from "crypto";
 import { hashPassword } from "@/lib/auth";
 
 export async function getUserByEmail(email: string): Promise<User | null> {
-    const user = await db.select().from(usersTable).where(eq(usersTable.email, email)).limit(1);
-    return user.at(0) ?? null;
+    const user = await db.query.usersTable.findFirst({
+        where: eq(usersTable.email, email),
+    });
+    return user ?? null;
 }
 
 export async function createUser(email: string, password: string): Promise<User> {

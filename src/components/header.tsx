@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { Menu, CircleUser, LibraryBig, BookOpen, LogIn, LogOut } from "lucide-react";
+import { Menu, CircleUser, LibraryBig, BookOpen, LogIn, LogOut, Settings } from "lucide-react";
 
 import ThemeToggle from "./theme-toggle";
 
@@ -177,6 +177,15 @@ export default async function Header() {
                                         <CircleUser />
                                     </Link>
                                 </Button>
+                                {user.role === 'admin' && (
+                                    <NavButton
+                                        href="/admin"
+                                        text="Admin"
+                                        icon={Settings}
+                                        className="grow justify-start"
+                                        variant="secondary"
+                                    />
+                                )}
                                 <SignOut onClick={logout} />
                             </>
                         ) : (
