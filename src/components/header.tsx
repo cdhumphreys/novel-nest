@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { Menu, CircleUser, LibraryBig, BookOpen, LogIn, LogOut, Settings } from "lucide-react";
 
 import ThemeToggle from "./theme-toggle";
@@ -14,11 +13,8 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
-import { getCurrentUser, deleteSessionCookie } from "@/lib/sessions";
+import { getCurrentUser } from "@/lib/sessions";
 import { User } from "@/db/schema";
-import { SignOut } from "./header/sign-out";
-
-
 
 const NavButton = ({
     text,
@@ -48,11 +44,6 @@ const NavButton = ({
     );
 };
 
-async function logout() {
-    'use server';
-    await deleteSessionCookie();
-    redirect("/login");
-}
 
 const MobileMenu = ({ user }: { user: User | null }) => {
     return (
@@ -94,7 +85,12 @@ const MobileMenu = ({ user }: { user: User | null }) => {
                                 />
                             </DropdownMenuItem>
                             <DropdownMenuItem>
-                                <SignOut onClick={logout} />
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link href="/logout">
+                                        <LogOut className="h-5 w-5" />
+                                        <span className="lg:sr-only">Sign out</span>
+                                    </Link>
+                                </Button>
                             </DropdownMenuItem>
                         </>
                     ) : (
@@ -126,7 +122,7 @@ const MobileMenu = ({ user }: { user: User | null }) => {
 };
 
 export default async function Header() {
-    const user: User | null = await getCurrentUser();
+    const user = await getCurrentUser();
     return (
         <header className="sticky top-0 z-50 bg-background">
             <div className="container mx-auto py-6">
@@ -186,7 +182,12 @@ export default async function Header() {
                                         variant="secondary"
                                     />
                                 )}
-                                <SignOut onClick={logout} />
+                                <Button variant="ghost" size="icon" asChild>
+                                    <Link href="/logout">
+                                        <LogOut className="h-5 w-5" />
+                                        <span className="lg:sr-only">Sign out</span>
+                                    </Link>
+                                </Button>
                             </>
                         ) : (
                             <>

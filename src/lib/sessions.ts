@@ -7,6 +7,7 @@ import { cache } from "react";
 
 import { createSession, generateSessionToken, validateSessionToken, type SessionValidationResult } from "@/server/sessions";
 import { type User } from "@/db/schema";
+import { AuthorisationError, AuthenticationError } from "./utils";
 
 export async function setSessionCookie(token: string, expiresAt: Date): Promise<void> {
     cookies().set('session', token, {
@@ -20,6 +21,25 @@ export async function setSessionCookie(token: string, expiresAt: Date): Promise<
 
 export async function deleteSessionCookie(): Promise<void> {
     cookies().delete('session');
+}
+
+export async function checkAuthenticatedUser(): Promise<User | null> {
+    const { user } = await getCurrentSession();
+    if (user === null) {
+        throw new Error('User not found');
+    }
+    return user;
+}
+
+export async function checkAuthorisedUser(): Promise<User | null> {
+    const { user } = await getCurrentSession();
+    if (user === null) {
+        throw new AuthenticationError('User not found');
+    }
+    if (user.role !== 'admin') {
+        throw new AuthorisationError('User is not an admin');
+    }
+    return user;
 }
 
 export const getCurrentSession = cache(async (): Promise<SessionValidationResult> => {

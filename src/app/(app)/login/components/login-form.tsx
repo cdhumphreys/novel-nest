@@ -49,7 +49,7 @@ export default function LoginForm() {
 
         if (result.success) {
             form.reset();
-            router.push('/dashboard');
+            router.push('/my-profile');
         }
     }
 
@@ -78,7 +78,7 @@ export default function LoginForm() {
                             <FormItem>
                                 <FormControl>
                                     <div className="relative">
-                                        <Input placeholder="Password" {...field} type={passwordVisible ? "text" : "password"} ref={passwordRef} autoComplete="new-password" />
+                                        <Input placeholder="Password" {...field} type={passwordVisible ? "text" : "password"} ref={passwordRef} autoComplete="password" />
                                         <Button onClick={() => setPasswordVisible(!passwordVisible)} type="button" variant="outline" size="icon" className="absolute right-0 top-1/2 -translate-y-1/2 ">
                                             <Eye />
                                         </Button>

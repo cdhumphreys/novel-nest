@@ -57,7 +57,7 @@ export default function SignUpForm() {
 
         if (result.success) {
             form.reset();
-            router.push('/register/verify');
+            router.push('/my-profile');
         }
     }
 
