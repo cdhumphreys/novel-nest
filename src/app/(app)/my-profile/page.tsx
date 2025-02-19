@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/sessions";
-import { getProfileByUserId } from "@/lib/profiles";
+import { getProfileByUserId } from "@/data-access/profiles";
 import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {

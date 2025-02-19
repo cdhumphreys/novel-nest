@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 
-import { Book, Author, Review } from "@/lib/types";
+import { Book, Author, Review } from "@/db/schema";
 
 import RatingStars from "@/components/rating-stars";
 import { Button } from "@/components/ui/button";
@@ -84,9 +84,9 @@ function BookDetails({
                 )}
             </BookHeader>
 
-            {book.coverImage ? (
+            {book.coverImageUrl ? (
                 <Image
-                    src={book.coverImage}
+                    src={book.coverImageUrl}
                     alt={book.title}
                     width={200}
                     height={300}
@@ -149,7 +149,7 @@ function BookReviews({ reviews }: { reviews: Review[] }) {
                             <div className="flex flex-col gap-2">
                                 <div className="flex items-center gap-3">
                                     <Avatar
-                                        name={review.userId}
+                                        name={review.userId.toString()}
                                         size={32}
                                         variant="beam"
                                     />
@@ -159,9 +159,16 @@ function BookReviews({ reviews }: { reviews: Review[] }) {
                                         </span>
                                         <span className="text-sm text-gray-500">
                                             {getHumanReadableDate(
-                                                review.datePosted
+                                                review.createdAt
                                             )}
                                         </span>
+                                        {review.updatedAt && (
+                                            <span className="text-xs text-gray-500">
+                                                {getHumanReadableDate(
+                                                    review.updatedAt
+                                                )}
+                                            </span>
+                                        )}
                                     </div>
                                 </div>
                                 <div className="rounded-lg bg-secondary p-4 flex flex-col gap-2">

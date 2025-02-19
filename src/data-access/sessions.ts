@@ -1,18 +1,10 @@
-import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "@oslojs/encoding";
+import { encodeHexLowerCase } from "@oslojs/encoding";
 import { sha256 } from '@oslojs/crypto/sha2';
 import { eq } from 'drizzle-orm';
 
 import { database as db } from "@/db";
-import type { User, Session } from "@/db/schema";
-import { usersTable, sessionsTable } from "@/db/schema";
-
-export function generateSessionToken(): string {
-    const bytes = new Uint8Array(20);
-    crypto.getRandomValues(bytes);
-    // Wont't add padding characters like "=" at the end
-    const token = encodeBase32LowerCaseNoPadding(bytes);
-    return token;
-}
+import type { Session, SafeUser } from "@/db/schema";
+import { sessionsTable } from "@/db/schema";
 
 export async function createSession(token: string, userId: number): Promise<Session> {
     const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
@@ -34,15 +26,30 @@ export async function validateSessionToken(token: string): Promise<SessionValida
     const result = await db.query.sessionsTable.findFirst({
         where: eq(sessionsTable.id, sessionId),
         with: {
-            user: true,
+            user: {
+                columns: {
+                    id: true,
+                    email: true,
+                    role: true,
+                    createdAt: true,
+                    updatedAt: true,
+                } satisfies Record<keyof SafeUser, true>,
+            },
         }
     });
     // Not found, return null
     if (!result) {
         return { session: null, user: null };
     }
-
+    const safeUser: SafeUser = {
+        id: result.user.id,
+        email: result.user.email,
+        role: result.user.role,
+        createdAt: result.user.createdAt,
+        updatedAt: result.user.updatedAt,
+    };
     const { user, ...session } = result;
+
     // Check if the session has expired, if so, delete it and return null
     if (Date.now() > session.expiresAt.getTime()) {
         await db.delete(sessionsTable).where(eq(sessionsTable.id, session.id));
@@ -56,7 +63,7 @@ export async function validateSessionToken(token: string): Promise<SessionValida
         await db.update(sessionsTable).set({ expiresAt: session.expiresAt }).where(eq(sessionsTable.id, session.id));
     }
 
-    return { session, user };
+    return { session, user: safeUser };
 }
 
 export async function invalidateSession(sessionId: string): Promise<void> {
@@ -73,5 +80,5 @@ export async function invalidateAllSessions(userId: number): Promise<void> {
 
 
 export type SessionValidationResult =
-    | { session: Session; user: User }
+    | { session: Session; user: SafeUser }
     | { session: null; user: null };

@@ -8,9 +8,13 @@ import {
 import { Button } from "../../ui/button";
 import { EyeIcon } from "lucide-react";
 
-import type { Book } from "@/lib/types";
+import type { Book } from "@/db/schema";
 
 export default function TooltipCoverImage({ book }: { book: Book }) {
+    const coverImageUrl = book.coverImageUrl;
+    if (!coverImageUrl) {
+        return null;
+    }
     return (
         <TooltipProvider delayDuration={0}>
             <Tooltip>
@@ -28,7 +32,7 @@ export default function TooltipCoverImage({ book }: { book: Book }) {
                 </TooltipTrigger>
                 <TooltipContent>
                     <Image
-                        src={book.coverImage!}
+                        src={coverImageUrl}
                         width={200}
                         height={300}
                         alt={book.title}

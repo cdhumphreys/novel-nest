@@ -4,10 +4,11 @@
 import { env } from "@/env";
 import { cookies } from "next/headers";
 import { cache } from "react";
-
-import { createSession, generateSessionToken, validateSessionToken, type SessionValidationResult } from "@/server/sessions";
-import { type User } from "@/db/schema";
-import { AuthorisationError, AuthenticationError } from "./utils";
+import { redirect } from "next/navigation";
+import { createSession, validateSessionToken, type SessionValidationResult } from "@/data-access/sessions";
+import type { SafeUser } from "@/db/schema";
+import { AuthorisationError, AuthenticationError } from "./errors";
+import { encodeBase32LowerCaseNoPadding } from "@oslojs/encoding";
 
 export async function setSessionCookie(token: string, expiresAt: Date): Promise<void> {
     cookies().set('session', token, {
@@ -23,19 +24,20 @@ export async function deleteSessionCookie(): Promise<void> {
     cookies().delete('session');
 }
 
-export async function checkAuthenticatedUser(): Promise<User | null> {
-    const { user } = await getCurrentSession();
-    if (user === null) {
-        throw new Error('User not found');
-    }
-    return user;
-}
-
-export async function checkAuthorisedUser(): Promise<User | null> {
+export async function checkAuthenticatedUser(): Promise<SafeUser | null> {
     const { user } = await getCurrentSession();
     if (user === null) {
         throw new AuthenticationError('User not found');
     }
+    return user as SafeUser;
+}
+
+export async function checkAuthorisedUser(): Promise<SafeUser | null> {
+    const { user } = await getCurrentSession();
+    if (user === null) {
+        return redirect('/login');
+    }
+
     if (user.role !== 'admin') {
         throw new AuthorisationError('User is not an admin');
     }
@@ -52,13 +54,21 @@ export const getCurrentSession = cache(async (): Promise<SessionValidationResult
 });
 
 export async function setSession(userId: number): Promise<void> {
-    const token = generateSessionToken();
+    const token = await generateSessionToken();
     const session = await createSession(token, userId);
     setSessionCookie(token, session.expiresAt);
 }
 
 
-export const getCurrentUser = cache(async (): Promise<User | null> => {
+export const getCurrentUser = cache(async (): Promise<SafeUser | null> => {
     const { user } = await getCurrentSession();
     return user ?? null;
 });
+
+export async function generateSessionToken(): Promise<string> {
+    const bytes = new Uint8Array(20);
+    crypto.getRandomValues(bytes);
+    // Wont't add padding characters like "=" at the end
+    const token = encodeBase32LowerCaseNoPadding(bytes);
+    return token;
+}

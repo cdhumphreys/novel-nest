@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { getCurrentUser } from "@/lib/sessions";
-import { User } from "@/db/schema";
+import { SafeUser } from "@/db/schema";
 
 const NavButton = ({
     text,
@@ -45,7 +45,7 @@ const NavButton = ({
 };
 
 
-const MobileMenu = ({ user }: { user: User | null }) => {
+const MobileMenu = ({ user }: { user: SafeUser | null }) => {
     return (
         <div className="lg:hidden flex">
             <DropdownMenu>

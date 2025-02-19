@@ -5,10 +5,9 @@ import Link from "next/link";
 
 import BookCard from "./books-list/book-card";
 
-
 import { SearchX } from "lucide-react";
 
-import type { Book, Author, Review } from "@/lib/types";
+import type { Book, Author, Review } from "@/db/schema";
 
 
 export default function BookList({

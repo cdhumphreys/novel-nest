@@ -1,7 +1,9 @@
 'use client' // Error components must be Client Components
 
-import { AuthenticationError, AuthorisationError } from '@/lib/utils'
+import { AuthenticationError, AuthorisationError } from '@/lib/errors'
 import { useEffect } from 'react'
+
+
 
 export default function Error({
     error,
@@ -12,7 +14,7 @@ export default function Error({
 }) {
     useEffect(() => {
         // Log the error to an error reporting service
-        console.error(error, error.name)
+        console.log(error.name)
     }, [error])
 
     if (error instanceof AuthenticationError) {

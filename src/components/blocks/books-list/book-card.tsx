@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import type { Book, Author } from "@/lib/types";
+import type { Book, Author } from "@/db/schema";
 import { getHumanReadableDate } from "@/lib/utils";
 
 import TooltipCoverImage from "./tool-tip-cover-image";
@@ -132,7 +132,7 @@ export default function BookCard({
                                 )}
                             </CardDescription>
                         </div>
-                        {book.coverImage && <TooltipCoverImage book={book} />}
+                        {book.coverImageUrl && <TooltipCoverImage book={book} />}
                     </div>
                     {rating && (
                         <div className="flex gap-2 items-center">

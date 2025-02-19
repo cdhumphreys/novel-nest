@@ -27,6 +27,17 @@ export const profilesTable = pgTable('nn_profiles', {
         .references(() => usersTable.id, { onDelete: "cascade" }),
 });
 
+export const authorsTable = pgTable('nn_authors', {
+    id: serial('id').primaryKey(),
+    name: varchar('name', { length: 256 }).notNull(),
+    bio: text('bio'),
+    dateOfBirth: timestamp('date_of_birth', { mode: 'date' }),
+    dateOfDeath: timestamp('date_of_death', { mode: 'date' }),
+    age: integer('age'),
+    userId: integer("user_id")
+        .references(() => usersTable.id, { onDelete: "cascade" }),
+});
+
 export const sessionsTable = pgTable('nn_sessions', {
     id: text('id').primaryKey(),
     userId: integer("user_id")
@@ -64,7 +75,7 @@ export const publishersTable = pgTable('nn_publishers', {
 
 export const booksTable = pgTable('nn_books', {
     id: serial('id').primaryKey(),
-    name: varchar('name', { length: 256 }).notNull(),
+    title: varchar('title', { length: 256 }).notNull(),
     description: text('description').notNull(),
     dateAdded: timestamp('date_added', { mode: 'date' }).notNull().defaultNow(),
     datePublished: timestamp('date_published', { mode: 'date' }),
@@ -72,9 +83,9 @@ export const booksTable = pgTable('nn_books', {
     numPages: integer('num_pages'),
     language: varchar('language', { length: 256 }),
     isbn: varchar('isbn', { length: 13 }),
-    authorId: integer("user_id")
-        .notNull()
-        .references(() => usersTable.id, { onDelete: "cascade" }),
+    authorId: integer("author_id")
+        .references(() => authorsTable.id, { onDelete: "cascade" }),
+    coverImageUrl: text('cover_image_url'),
 })
 
 export const genresTable = pgTable('nn_genres', {
@@ -124,10 +135,7 @@ export const sessionRelationsTable = relations(sessionsTable, ({ one }) => ({
 }));
 
 export const bookRelationsTable = relations(booksTable, ({ one, many }) => ({
-    author: one(usersTable, {
-        fields: [booksTable.authorId],
-        references: [usersTable.id]
-    }),
+    author: many(authorsTable),
     publisher: one(publishersTable, {
         fields: [booksTable.publishedBy],
         references: [publishersTable.id]
@@ -152,14 +160,14 @@ export const reviewsRelationsTable = relations(reviewsTable, ({ one, many }) => 
         fields: [reviewsTable.bookId],
         references: [booksTable.id]
     }),
-    author: one(usersTable, {
+    reviewer: one(usersTable, {
         fields: [reviewsTable.userId],
         references: [usersTable.id]
     }),
     comments: many(reviewCommentsTable)
 }));
 export const reviewCommentsRelationsTable = relations(reviewCommentsTable, ({ one, many }) => ({
-    author: one(usersTable, {
+    commenter: one(usersTable, {
         fields: [reviewCommentsTable.userId],
         references: [usersTable.id]
     }),
@@ -171,15 +179,17 @@ export const reviewCommentsRelationsTable = relations(reviewCommentsTable, ({ on
 
 // Type exports
 export type User = typeof usersTable.$inferSelect;
+export type SafeUser = Pick<User, 'id' | 'email' | 'role' | 'createdAt' | 'updatedAt'>;
 export type Session = typeof sessionsTable.$inferSelect;
 export type EmailVerification = typeof emailVerificationsTable.$inferSelect;
 export type PasswordResetSession = typeof passwordResetSessionsTable.$inferSelect;
 
 export type Profile = typeof profilesTable.$inferSelect;
 
+export type Author = typeof authorsTable.$inferSelect;
 export type Publisher = typeof publishersTable.$inferSelect;
 export type Book = typeof booksTable.$inferSelect;
 
-export type Reviews = typeof reviewsTable.$inferSelect;
-export type ReviewComments = typeof reviewCommentsTable.$inferSelect;
+export type Review = typeof reviewsTable.$inferSelect;
+export type ReviewComment = typeof reviewCommentsTable.$inferSelect;
 export type Genre = typeof genresTable.$inferSelect;

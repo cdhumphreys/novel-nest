@@ -4,11 +4,12 @@ import {
     BookReviews,
     BookAuthor,
 } from "./components/book";
-import { getBook } from "@/server/actions/books";
-import { getAuthor } from "@/server/actions/authors";
+import { getBookById } from "@/data-access/books";
+import { getAuthorById } from "@/data-access/authors";
+import { getReviewsByBookId } from "@/data-access/reviews";
+
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { getReviewsByBookId } from "@/server/actions/reviews";
 
 function BookNotFound() {
     return (
@@ -27,19 +28,16 @@ function BookNotFound() {
 }
 
 export default async function BookPage({ params }: { params: { id: string } }) {
-    const { data: book, error: bookError } = await getBook(params.id);
+    const book = await getBookById(Number(params.id));
 
     if (!book || !book.authorId) {
         return <BookNotFound />;
     }
 
-    const { data: reviews, error: reviewsError } = await getReviewsByBookId(
-        book.id
-    );
+    const reviews = await getReviewsByBookId(book.id);
 
-    const { data: author, error: authorsError } = await getAuthor(
-        book.authorId
-    );
+    const author = await getAuthorById(book.authorId);
+
     const rating =
         reviews.length > 0
             ? reviews.reduce((acc, review) => acc + review.rating, 0) /

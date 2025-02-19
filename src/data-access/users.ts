@@ -1,12 +1,26 @@
 import { database as db } from "@/db";
 import { eq } from "drizzle-orm";
-import { usersTable, type User } from "@/db/schema";
+import { usersTable, type User, type SafeUser } from "@/db/schema";
 import crypto from "crypto";
 import { hashPassword } from "@/lib/auth";
 
-export async function getUserByEmail(email: string): Promise<User | null> {
+export async function getFullUserByEmail(email: string): Promise<User | null> {
     const user = await db.query.usersTable.findFirst({
         where: eq(usersTable.email, email),
+    });
+    return user ?? null;
+}
+
+export async function getUserByEmail(email: string): Promise<SafeUser | null> {
+    const user = await db.query.usersTable.findFirst({
+        where: eq(usersTable.email, email),
+        columns: {
+            id: true,
+            email: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true,
+        } satisfies Record<keyof SafeUser, true>,
     });
     return user ?? null;
 }

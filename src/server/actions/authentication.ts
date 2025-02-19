@@ -1,8 +1,8 @@
 'use server'
 
 import { signUpSchema, loginSchema } from "@/lib/schemas/auth";
-import { getUserByEmail, createUser } from "@/lib/users";
-import { createProfile, getProfileByUsername } from "@/lib/profiles";
+import { getUserByEmail, getFullUserByEmail, createUser } from "@/data-access/users";
+import { createProfile, getProfileByUsername } from "@/data-access/profiles";
 
 import { setSession } from "@/lib/sessions";
 import { hashPassword } from "@/lib/auth";
@@ -66,7 +66,7 @@ export async function loginAction(formData: unknown) {
     const { email, password } = parsed.data
 
 
-    const user = await getUserByEmail(email);
+    const user = await getFullUserByEmail(email);
     if (!user) {
         return { errors: { email: 'User does not exist' } }
     }
