@@ -122,7 +122,7 @@ const MobileMenu = ({ user }: { user: SafeUser | null }) => {
 };
 
 export default async function Header() {
-    const user = await getCurrentUser();
+    const { user } = await getCurrentUser();
     return (
         <header className="sticky top-0 z-50 bg-background">
             <div className="container mx-auto py-6">

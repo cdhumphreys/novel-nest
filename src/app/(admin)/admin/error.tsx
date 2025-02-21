@@ -1,9 +1,6 @@
 'use client' // Error components must be Client Components
 
-import { AuthenticationError, AuthorisationError } from '@/lib/errors'
 import { useEffect } from 'react'
-
-
 
 export default function Error({
     error,
@@ -17,16 +14,12 @@ export default function Error({
         console.log(error.name)
     }, [error])
 
-    if (error instanceof AuthenticationError) {
-        return (<div>
-            <h2>You must be logged in to access this page!</h2>
-        </div>)
-    }
-
-    if (error instanceof AuthorisationError) {
-        return (<div>
-            <h2>You must be an admin to access this page!</h2>
-        </div>)
-    }
+    return <div className="flex flex-col gap-5 items-center justify-center min-h-screen">
+        <div className="flex flex-col gap-2 items-center">
+            <h2 className="text-2xl font-bold">An error occurred</h2>
+            <p className="text-lg">{error.message}</p>
+        </div>
+        <a href="/" className="text-blue-500 hover:text-blue-600 hover:underline">Go back to the home page</a>
+    </div>
 
 }

@@ -1,19 +1,17 @@
 
-export class AuthenticationError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'AuthenticationError';
-        Object.setPrototypeOf(this, AuthenticationError.prototype)
+type ErrorType = 'AuthenticationError' | 'AuthorisationError';
 
-    }
+type NNError = {
+    error: ErrorType;
+    message: string;
 }
 
-export class AuthorisationError extends Error {
-    constructor(message: string) {
-        super(message);
-        this.name = 'AuthorisationError';
-        Object.setPrototypeOf(this, AuthorisationError.prototype)
-
-    }
+export type AuthenticationError = NNError & {
+    error: "AuthenticationError";
+    message: string;
 }
 
+export type AuthorisationError = NNError & {
+    error: "AuthorisationError";
+    message: string;
+}

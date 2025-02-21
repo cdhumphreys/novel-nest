@@ -3,7 +3,7 @@ import { getProfileByUserId } from "@/data-access/profiles";
 import { redirect } from "next/navigation";
 
 export default async function ProfilePage() {
-    const user = await getCurrentUser();
+    const { user } = await getCurrentUser();
     if (!user) {
         return redirect("/login");
     }

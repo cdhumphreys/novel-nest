@@ -4,11 +4,11 @@
 import { env } from "@/env";
 import { cookies } from "next/headers";
 import { cache } from "react";
-import { redirect } from "next/navigation";
+
 import { createSession, validateSessionToken, type SessionValidationResult } from "@/data-access/sessions";
 import type { SafeUser } from "@/db/schema";
-import { AuthorisationError, AuthenticationError } from "./errors";
 import { encodeBase32LowerCaseNoPadding } from "@oslojs/encoding";
+import { AuthenticationError, AuthorisationError } from "./errors";
 
 export async function setSessionCookie(token: string, expiresAt: Date): Promise<void> {
     cookies().set('session', token, {
@@ -24,24 +24,24 @@ export async function deleteSessionCookie(): Promise<void> {
     cookies().delete('session');
 }
 
-export async function checkAuthenticatedUser(): Promise<SafeUser | null> {
+export async function checkAuthenticatedUser(): Promise<{ user: SafeUser, error: null } | { user: null, error: AuthenticationError }> {
     const { user } = await getCurrentSession();
     if (user === null) {
-        throw new AuthenticationError('User not found');
+        return { error: { error: "AuthenticationError", message: 'User not authenticated' }, user: null }
     }
-    return user as SafeUser;
+    return { user: user as SafeUser, error: null };
 }
 
-export async function checkAuthorisedUser(): Promise<SafeUser | null> {
+export async function checkAuthorisedUser(): Promise<{ user: SafeUser, error: null } | { user: null, error: AuthenticationError } | { user: null, error: AuthorisationError }> {
     const { user } = await getCurrentSession();
     if (user === null) {
-        return redirect('/login');
+        return { error: { error: "AuthenticationError", message: 'User not authenticated' }, user: null }
     }
 
     if (user.role !== 'admin') {
-        throw new AuthorisationError('User is not an admin');
+        return { error: { error: "AuthorisationError", message: 'User is not an admin' }, user: null }
     }
-    return user;
+    return { user: user as SafeUser, error: null };
 }
 
 export const getCurrentSession = cache(async (): Promise<SessionValidationResult> => {
@@ -60,9 +60,12 @@ export async function setSession(userId: number): Promise<void> {
 }
 
 
-export const getCurrentUser = cache(async (): Promise<SafeUser | null> => {
+export const getCurrentUser = cache(async (): Promise<{ user: SafeUser, error: null } | { user: null, error: AuthenticationError }> => {
     const { user } = await getCurrentSession();
-    return user ?? null;
+    if (user === null) {
+        return { error: { error: "AuthenticationError", message: 'User not authenticated' }, user: null }
+    }
+    return { user: user as SafeUser, error: null };
 });
 
 export async function generateSessionToken(): Promise<string> {

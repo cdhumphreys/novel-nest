@@ -2,7 +2,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { deleteSessionCookie } from "@/lib/sessions";
-import { validateSessionToken, invalidateSession } from "@/server/sessions";
+import { validateSessionToken, invalidateSession } from "@/data-access/sessions";
 
 export async function GET(request: Request) {
     const token = cookies().get("session")?.value ?? null;
