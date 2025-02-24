@@ -183,10 +183,10 @@ export default async function Header() {
                                     />
                                 )}
                                 <Button variant="ghost" size="icon" asChild>
-                                    <Link href="/logout">
+                                    <a href="/logout">
                                         <LogOut className="h-5 w-5" />
                                         <span className="lg:sr-only">Sign out</span>
-                                    </Link>
+                                    </a>
                                 </Button>
                             </>
                         ) : (
