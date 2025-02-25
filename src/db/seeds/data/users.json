@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "email": "admin@example.com",
+        "passwordHash": "admin",
+        "salt": "admin",
+        "emailVerified": false,
+        "createdAt": "2021-01-01T00:00:00Z",
+        "updatedAt": "2021-01-01T00:00:00Z",
+        "role": "admin"
+    },
+    {
+        "id": 2,
+        "email": "user@example.com",
+        "passwordHash": "user",
+        "salt": "user",
+        "emailVerified": false,
+        "createdAt": "2021-01-01T00:00:00Z",
+        "updatedAt": "2021-01-01T00:00:00Z",
+        "role": "user"
+    }
+]
