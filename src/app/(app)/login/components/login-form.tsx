@@ -92,7 +92,7 @@ export default function LoginForm() {
                     <Button disabled={form.formState.isSubmitting} type="submit" className="mt-2 w-full">{form.formState.isSubmitting ? 'Logging in...' : 'Login'}</Button>
                 </form>
             </Form>
-            <p className="text-center mt-5">Don't have an account? <Link href="/sign-up" className="underline font-bold">Register</Link></p>
+            <p className="text-center mt-5">Don&apos;t have an account? <Link href="/sign-up" className="underline font-bold">Register</Link></p>
             {/* TODO: Add social login */}
             {/* <div className="flex flex-col gap-5">
                 <Button type="button" variant="outline" className="w-full">Continue with Google</Button>

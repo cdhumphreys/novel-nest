@@ -18,7 +18,7 @@ export default function RatingStars({ rating, size = 'sm' }: { rating: number, s
                         />
                     ))}
                 </>
-            ) : (<span className={textSizeClass}>'No ratings yet'</span>)}
+            ) : (<span className={textSizeClass}>No ratings yet</span>)}
 
         </div>
     );
