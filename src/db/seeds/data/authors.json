@@ -1,0 +1,20 @@
+[
+    {
+        "id": 1,
+        "name": "John Doe",
+        "bio": "John Doe bio",
+        "dateOfBirth": "1990-01-01",
+        "dateOfDeath": "2021-01-01",
+        "age": 30,
+        "userId": null
+    },
+    {
+        "id": 2,
+        "name": "Jane Doe",
+        "bio": "Jane Doe bio",
+        "dateOfBirth": "1990-01-01",
+        "dateOfDeath": "2021-01-01",
+        "age": 30,
+        "userId": 3
+    }
+]

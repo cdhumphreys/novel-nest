@@ -24,24 +24,35 @@ export async function seedTables() {
         schema.reviewCommentsTable,
     ]
 
-    console.log("Resetting tables...");
+    console.log("==========Resetting tables==========\n");
     for (const table of tables) {
         await resetTable(db, table);
     }
-    console.log("Tables reset");
-    console.log("Seeding tables...");
+    console.log("==========Tables reset==========\n");
+    console.log("==========Seeding tables==========\n");
 
-    for (const seeder of Object.values(seeds)) {
+    const seeders = [
+        seeds.users,
+        seeds.profiles,
+        seeds.genres,
+        seeds.authors,
+        seeds.publishers,
+        seeds.books,
+        seeds.reviews,
+        seeds.reviewComments,
+    ]
+
+    for (const seeder of seeders) {
         await seeder(db);
     }
 
-    console.log("Finished seeding tables");
+    console.log("\n==========Finished seeding tables==========\n");
 
     pg.end();
 }
 
 seedTables().then(() => {
-    console.log("Tables seeded successfully");
+    console.log("Tables seeded successfully!");
 }).catch((error) => {
     console.error("Error seeding tables:", error);
 });

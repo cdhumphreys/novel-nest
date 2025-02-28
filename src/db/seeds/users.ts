@@ -4,7 +4,7 @@ import rawUsers from "./data/users.json";
 import crypto from "crypto";
 import { hashPassword } from "@/lib/auth";
 
-const seed = async function seed(db: database) {
+export default async function seed(db: database) {
     console.log("Seeding users...");
     const salt = crypto.randomBytes(128).toString("base64");
     const hash = await hashPassword("password", salt);
@@ -17,6 +17,5 @@ const seed = async function seed(db: database) {
         salt: salt
     }));
     await db.insert(usersTable).values(users);
+    console.log("Users seeded successfully");
 }
-
-export default seed;

@@ -1,0 +1,35 @@
+[
+    {
+        "id": 1,
+        "title": "Book 1",
+        "description": "Book 1 description",
+        "dateAdded": "2021-01-01",
+        "datePublished": "2021-01-01",
+        "publisherId": 1,
+        "authorId": 1,
+        "coverImageUrl": "https://picsum.photos/200/300"
+    },
+    {
+        "id": 2,
+        "title": "Book 2",
+        "description": "Book 2 description",
+        "dateAdded": "2021-01-01",
+        "datePublished": "2021-01-01",
+        "publisherId": 2,
+        "authorId": 2,
+        "coverImageUrl": "https://picsum.photos/200/300"
+    },
+    {
+        "id": 3,
+        "title": "Book 3",
+        "description": "Book 3 description",
+        "dateAdded": "2021-01-01",
+        "datePublished": "2021-01-01",
+        "publisherId": 1,
+        "authorId": 1,
+        "numPages": 725,
+        "language": "English",
+        "isbn": "978-3-16-148410-0",
+        "coverImageUrl": "https://picsum.photos/200/300"
+    }
+]

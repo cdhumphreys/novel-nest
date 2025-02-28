@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "bookId": 1,
+        "rating": 5,
+        "comment": "This is a great book!",
+        "userId": 1,
+        "createdAt": "2022-03-15T14:32:11Z",
+        "updatedAt": "2022-05-20T09:45:23Z"
+    },
+    {
+        "id": 2,
+        "bookId": 2,
+        "rating": 4,
+        "comment": "This is a good book!",
+        "userId": 2,
+        "createdAt": "2022-07-01T18:22:45Z",
+        "updatedAt": "2022-07-01T18:22:45Z"
+    },
+    {
+        "id": 3,
+        "bookId": 3,
+        "rating": 3,
+        "comment": "This is an average book.",
+        "userId": 3,
+        "createdAt": "2021-11-30T08:15:33Z",
+        "updatedAt": "2022-01-12T16:44:19Z"
+    },
+    {
+        "id": 4,
+        "bookId": 3,
+        "rating": 2,
+        "comment": "Not a fan of this book.",
+        "userId": 1,
+        "createdAt": "2022-09-05T11:52:08Z",
+        "updatedAt": "2022-10-18T13:27:55Z"
+    }
+]

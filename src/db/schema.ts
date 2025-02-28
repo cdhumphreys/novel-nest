@@ -79,10 +79,10 @@ export const booksTable = pgTable('nn_books', {
     description: text('description').notNull(),
     dateAdded: timestamp('date_added', { mode: 'date' }).notNull().defaultNow(),
     datePublished: timestamp('date_published', { mode: 'date' }),
-    publishedBy: integer('publisher_id').references(() => publishersTable.id, { onDelete: 'set null' }),
+    publisherId: integer('publisher_id').references(() => publishersTable.id, { onDelete: 'set null' }),
     numPages: integer('num_pages'),
     language: varchar('language', { length: 256 }),
-    isbn: varchar('isbn', { length: 13 }),
+    isbn: varchar('isbn', { length: 256 }),
     authorId: integer("author_id")
         .references(() => authorsTable.id, { onDelete: "cascade" }),
     coverImageUrl: text('cover_image_url'),
@@ -140,7 +140,7 @@ export const bookRelationsTable = relations(booksTable, ({ one, many }) => ({
         references: [authorsTable.id]
     }),
     publisher: one(publishersTable, {
-        fields: [booksTable.publishedBy],
+        fields: [booksTable.publisherId],
         references: [publishersTable.id]
     }),
     reviews: many(reviewsTable),

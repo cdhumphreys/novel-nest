@@ -1,0 +1,22 @@
+[
+    {
+        "id": 1,
+        "age": 30,
+        "joinedDate": "2021-01-01",
+        "dateOfBirth": "1991-01-01",
+        "dateOfDeath": "2021-01-01",
+        "username": "user",
+        "bio": "User bio goes here",
+        "userId": 1
+    },
+    {
+        "id": 2,
+        "age": 25,
+        "joinedDate": "2021-01-01",
+        "dateOfBirth": "1996-01-01",
+        "dateOfDeath": "2021-01-01",
+        "username": "user1",
+        "bio": "User 1 bio goes here",
+        "userId": 2
+    }
+]
