@@ -2,27 +2,41 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { ImageOff, StarIcon } from "lucide-react";
+import Avatar from "boring-avatars";
 
-import { Book, Author, Review } from "@/db/schema";
+import { Book, Author, sessionsTable } from "@/db/schema";
+import { ReviewsWithCommentsAndProfiles } from "@/data-access/reviews";
 
 import RatingStars from "@/components/rating-stars";
 import { Button } from "@/components/ui/button";
 import StickyBlock from "@/components/sticky-block";
+
 import { getHumanReadableDate } from "@/lib/utils";
-
-import { ImageOff, StarIcon } from "lucide-react";
-
-import Avatar from "boring-avatars";
+import { useState } from "react";
+import { useSession } from "@/hooks/use-session";
 
 function BookActions() {
+    const session = useSession();
+    console.log(session);
     return (
-        <div className="flex flex-col sm:flex-row gap-4 w-full">
-            <Button variant={"default"} size={"lg"} className="sm:flex-1">
-                Add to wishlist
-            </Button>
-            <Button variant={"outline"} size={"lg"} className="sm:flex-1">
-                Leave a review
-            </Button>
+        <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+            {session?.user ? (
+                <>
+                    <Button variant={"default"} size={"lg"} className="sm:flex-1">
+                        Add to wishlist
+                    </Button>
+                    <Button variant={"outline"} size={"lg"} className="sm:flex-1">
+                        Leave a review
+                    </Button>
+                </>
+            ) : (
+                <Button variant={"outline"} size={"lg"} asChild>
+                    <Link href="/login">
+                        Login to leave a review
+                    </Link>
+                </Button>
+            )}
         </div>
     );
 }
@@ -91,6 +105,7 @@ function BookDetails({
                     width={200}
                     height={300}
                     className="rounded-lg mx-auto"
+                    priority
                 />
             ) : (
                 <div className="relative rounded-lg bg-secondary flex items-center justify-center aspect-[2/3] w-[200px]">
@@ -117,7 +132,7 @@ function BookDescription({ book }: { book: Book }) {
     );
 }
 
-function BookReviews({ reviews }: { reviews: Review[] }) {
+function BookReviews({ reviews }: { reviews: ReviewsWithCommentsAndProfiles }) {
     const averageRating =
         reviews.length > 0
             ? reviews.reduce((acc, review) => acc + review.rating, 0) /
@@ -142,51 +157,106 @@ function BookReviews({ reviews }: { reviews: Review[] }) {
             <div className="flex flex-col gap-5">
                 {reviews.length > 0 ? (
                     reviews.map((review) => (
-                        <div
-                            key={review.id}
-                            className="last:border-b-0 border-b border-primary/10 pb-5 last:pb-0"
-                        >
-                            <div className="flex flex-col gap-2">
-                                <div className="flex items-center gap-3">
-                                    <Avatar
-                                        name={review.userId.toString()}
-                                        size={32}
-                                        variant="beam"
-                                    />
-                                    <div className="flex flex-col">
-                                        <span className="text-lg font-bold font-serif">
-                                            {review.userId}
-                                        </span>
-                                        <span className="text-sm text-gray-500">
-                                            {getHumanReadableDate(
-                                                review.createdAt
-                                            )}
-                                        </span>
-                                        {review.updatedAt && (
-                                            <span className="text-xs text-gray-500">
-                                                {getHumanReadableDate(
-                                                    review.updatedAt
-                                                )}
-                                            </span>
-                                        )}
-                                    </div>
-                                </div>
-                                <div className="rounded-lg bg-secondary p-4 flex flex-col gap-2">
-                                    <RatingStars
-                                        rating={review.rating}
-                                        size="sm"
-                                    />
-                                    <div className="text-secondary-foreground">
-                                        <p>{review.comment}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        <BookReview key={review.id} review={review} />
                     ))
                 ) : (
                     <div className="text-lg text-gray-500">No reviews yet</div>
                 )}
             </div>
+        </div>
+    );
+}
+
+function BookReview({ review }: { review: ReviewsWithCommentsAndProfiles[number] }) {
+    const [showAllComments, setShowAllComments] = useState(false);
+    const session = useSession();
+    return (
+        <div
+            key={review.id}
+            className="last:border-b-0 border-b border-primary/10 pb-5 last:pb-0"
+        >
+            <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-3">
+                    <Avatar
+                        name={review.userId.toString()}
+                        size={32}
+                        variant="beam"
+                    />
+                    <div className="flex w-full justify-between items-end gap-5">
+                        <div className="flex flex-col">
+                            <span className="text-lg font-bold font-serif">
+                                {review.reviewer.profile?.username}
+                            </span>
+                            <span className="text-sm text-gray-500">
+                                {getHumanReadableDate(
+                                    review.createdAt
+                                )}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div className="rounded-lg bg-secondary p-4 flex flex-col gap-2">
+                    <RatingStars
+                        rating={review.rating}
+                        size="sm"
+                    />
+                    <div className="text-secondary-foreground relative flex flex-col gap-4 pr-16">
+                        <p>{review.comment}</p>
+                        {review.updatedAt && (
+                            <span className="text-xs text-gray-500">
+                                Last updated:&nbsp;
+                                {getHumanReadableDate(
+                                    review.updatedAt
+                                )}
+                            </span>
+                        )}
+                        {session?.user?.id && (
+                            <div className="absolute bottom-0 right-0">
+                                <Button variant={"link"} size={"sm"}>
+                                    Reply
+                                </Button>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+            {review.comments.length > 0 && (
+                <div className="mt-5 flex flex-col gap-2">
+                    {showAllComments ? review.comments.map((comment) => (
+                        <BookReviewComment key={comment.id} comment={comment} />
+                    )) : review.comments.slice(0, 3).map((comment) => (
+                        <BookReviewComment key={comment.id} comment={comment} />
+                    ))}
+                </div>
+            )}
+            {review.comments.length > 3 && !showAllComments && (
+                <div className="py-2 flex justify-center mt-5">
+                    <Button variant={"link"} size={"sm"} onClick={() => {
+                        setShowAllComments(true);
+                    }}>
+                        View all {review.comments.length} comments
+                    </Button>
+
+                </div>
+            )}
+        </div>
+    );
+}
+
+function BookReviewComment({ comment }: { comment: ReviewsWithCommentsAndProfiles[number]["comments"][number] }) {
+    return (
+        <div className="ml-10 flex flex-col gap-2 bg-secondary/50 p-5 rounded-lg">
+            <div className="flex gap-2 items-center">
+                <Avatar
+                    name={comment.userId.toString()}
+                    size={32}
+                    variant="beam"
+                />
+                <span className="text-sm font-bold font-serif">
+                    {comment.commenter.profile?.username || <span className="text-gray-500">Anonymous</span>}
+                </span>
+            </div>
+            <p>{comment.comment}</p>
         </div>
     );
 }

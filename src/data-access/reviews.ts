@@ -3,6 +3,8 @@ import { reviewsTable } from "@/db/schema";
 
 import { eq } from "drizzle-orm";
 
+
+
 export async function getReviews() {
     const reviews = await db.query.reviewsTable.findMany();
     return reviews;
@@ -21,6 +23,31 @@ export async function getReviewsByBookId(bookId: number) {
     });
     return reviews;
 }
+
+export async function getReviewsByBookIdWithCommentsAndProfiles(bookId: number) {
+    const reviews = await db.query.reviewsTable.findMany({
+        where: eq(reviewsTable.bookId, bookId),
+        with: {
+            reviewer: {
+                with: {
+                    profile: true,
+                },
+            },
+            comments: {
+                with: {
+                    commenter: {
+                        with: {
+                            profile: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+    return reviews;
+}
+
+export type ReviewsWithCommentsAndProfiles = Awaited<ReturnType<typeof getReviewsByBookIdWithCommentsAndProfiles>>;
 
 export async function getReviewsByUserId(userId: number) {
     const reviews = await db.query.reviewsTable.findMany({

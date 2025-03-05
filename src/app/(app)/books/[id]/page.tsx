@@ -6,7 +6,7 @@ import {
 } from "./components/book";
 import { getBookById } from "@/data-access/books";
 import { getAuthorById } from "@/data-access/authors";
-import { getReviewsByBookId } from "@/data-access/reviews";
+import { getReviewsByBookIdWithCommentsAndProfiles } from "@/data-access/reviews";
 
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -34,8 +34,7 @@ export default async function BookPage({ params }: { params: { id: string } }) {
         return <BookNotFound />;
     }
 
-    const reviews = await getReviewsByBookId(book.id);
-
+    const reviews = await getReviewsByBookIdWithCommentsAndProfiles(book.id);
     const author = await getAuthorById(book.authorId);
 
     const rating =
@@ -50,7 +49,7 @@ export default async function BookPage({ params }: { params: { id: string } }) {
                 <div className="lg:sticky lg:top-10">
                     <BookDetails
                         book={book}
-                        author={author || undefined}
+                        author={author}
                         rating={rating}
                     />
                 </div>
