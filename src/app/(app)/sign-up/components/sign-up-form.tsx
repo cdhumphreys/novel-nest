@@ -112,7 +112,7 @@ export default function SignUpForm() {
                         control={form.control}
                         name="terms"
                         render={({ field }) => (
-                            <FormItem className="flex flex-row flex-wrap items-center gap-x-3 space-y-0 px-4 py-2">
+                            <FormItem className="flex flex-row flex-wrap items-center gap-x-3 px-4 py-2">
                                 <FormControl>
                                     <Checkbox
                                         className="w-6 h-6"
