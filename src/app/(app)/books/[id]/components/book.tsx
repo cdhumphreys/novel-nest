@@ -23,18 +23,24 @@ function BookActions() {
         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
             {session?.user ? (
                 <>
-                    <Button variant={"default"} size={"lg"} className="sm:flex-1">
+                    <Button
+                        variant={"default"}
+                        size={"lg"}
+                        className="sm:flex-1"
+                    >
                         Add to wishlist
                     </Button>
-                    <Button variant={"outline"} size={"lg"} className="sm:flex-1">
+                    <Button
+                        variant={"outline"}
+                        size={"lg"}
+                        className="sm:flex-1"
+                    >
                         Leave a review
                     </Button>
                 </>
             ) : (
                 <Button variant={"outline"} size={"lg"} asChild>
-                    <Link href="/login">
-                        Login to leave a review
-                    </Link>
+                    <Link href="/login">Login to leave a review</Link>
                 </Button>
             )}
         </div>
@@ -53,9 +59,7 @@ function BookHeader({
     return (
         <div className="flex flex-col gap-1 items-start w-full">
             {children}
-            <h1 className="text-2xl font-serif lg:text-4xl">
-                {title}
-            </h1>
+            <h1 className="text-2xl font-serif lg:text-4xl">{title}</h1>
             {author ? (
                 <Link
                     href={`/authors/${author.id}`}
@@ -86,7 +90,6 @@ function BookDetails({
             stickyMode="desktop"
             className="flex flex-col items-center gap-10"
         >
-
             <BookHeader title={book.title} author={author}>
                 {rating && (
                     <span className="bg-secondary flex items-center gap-1 text-xs px-2 py-1 rounded-full">
@@ -133,10 +136,12 @@ function BookDescription({ book }: { book: Book }) {
 }
 
 function BookReviews({ reviews }: { reviews: ReviewsWithCommentsAndProfiles }) {
+    const [showAllReviews, setShowAllReviews] = useState(false);
+    const session = useSession();
     const averageRating =
         reviews.length > 0
             ? reviews.reduce((acc, review) => acc + review.rating, 0) /
-            reviews.length
+              reviews.length
             : 0;
     return (
         <div className="flex flex-col gap-5">
@@ -156,18 +161,55 @@ function BookReviews({ reviews }: { reviews: ReviewsWithCommentsAndProfiles }) {
             </div>
             <div className="flex flex-col gap-5">
                 {reviews.length > 0 ? (
-                    reviews.map((review) => (
-                        <BookReview key={review.id} review={review} />
-                    ))
+                    showAllReviews ? (
+                        reviews.map((review) => (
+                            <BookReview key={review.id} review={review} />
+                        ))
+                    ) : (
+                        reviews
+                            .slice(0, 3)
+                            .map((review) => (
+                                <BookReview key={review.id} review={review} />
+                            ))
+                    )
                 ) : (
                     <div className="text-lg text-gray-500">No reviews yet</div>
                 )}
             </div>
+            {reviews.length > 3 && (
+                <div className="py-2 flex justify-center mt-5">
+                    {!showAllReviews ? (
+                        <Button
+                            variant={"link"}
+                            size={"sm"}
+                            onClick={() => {
+                                setShowAllReviews(true);
+                            }}
+                        >
+                            View all {reviews.length} reviews
+                        </Button>
+                    ) : (
+                        <Button
+                            variant={"link"}
+                            size={"sm"}
+                            onClick={() => {
+                                setShowAllReviews(false);
+                            }}
+                        >
+                            Hide reviews
+                        </Button>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
 
-function BookReview({ review }: { review: ReviewsWithCommentsAndProfiles[number] }) {
+function BookReview({
+    review,
+}: {
+    review: ReviewsWithCommentsAndProfiles[number];
+}) {
     const [showAllComments, setShowAllComments] = useState(false);
     const session = useSession();
     return (
@@ -188,26 +230,19 @@ function BookReview({ review }: { review: ReviewsWithCommentsAndProfiles[number]
                                 {review.reviewer.profile?.username}
                             </span>
                             <span className="text-sm text-gray-500">
-                                {getHumanReadableDate(
-                                    review.createdAt
-                                )}
+                                {getHumanReadableDate(review.createdAt)}
                             </span>
                         </div>
                     </div>
                 </div>
                 <div className="rounded-lg bg-secondary p-4 flex flex-col gap-2">
-                    <RatingStars
-                        rating={review.rating}
-                        size="sm"
-                    />
+                    <RatingStars rating={review.rating} size="sm" />
                     <div className="text-secondary-foreground relative flex flex-col gap-4 pr-16">
                         <p>{review.comment}</p>
                         {review.updatedAt && (
                             <span className="text-xs text-gray-500">
                                 Last updated:&nbsp;
-                                {getHumanReadableDate(
-                                    review.updatedAt
-                                )}
+                                {getHumanReadableDate(review.updatedAt)}
                             </span>
                         )}
                         {session?.user?.id && (
@@ -222,30 +257,59 @@ function BookReview({ review }: { review: ReviewsWithCommentsAndProfiles[number]
             </div>
             {review.comments.length > 0 && (
                 <div className="mt-5 flex flex-col gap-2">
-                    {showAllComments ? review.comments.map((comment) => (
-                        <BookReviewComment key={comment.id} comment={comment} />
-                    )) : review.comments.slice(0, 3).map((comment) => (
-                        <BookReviewComment key={comment.id} comment={comment} />
-                    ))}
+                    {showAllComments
+                        ? review.comments.map((comment) => (
+                              <BookReviewComment
+                                  key={comment.id}
+                                  comment={comment}
+                              />
+                          ))
+                        : review.comments
+                              .slice(0, 3)
+                              .map((comment) => (
+                                  <BookReviewComment
+                                      key={comment.id}
+                                      comment={comment}
+                                  />
+                              ))}
                 </div>
             )}
-            {review.comments.length > 3 && !showAllComments && (
-                <div className="py-2 flex justify-center mt-5">
-                    <Button variant={"link"} size={"sm"} onClick={() => {
-                        setShowAllComments(true);
-                    }}>
-                        View all {review.comments.length} comments
-                    </Button>
-
+            {review.comments.length > 3 && (
+                <div className="py-2 flex justify-center mt-5 pl-10">
+                    {!showAllComments ? (
+                        <Button
+                            variant={"link"}
+                            size={"sm"}
+                            onClick={() => {
+                                setShowAllComments(true);
+                            }}
+                        >
+                            View all {review.comments.length} comments
+                        </Button>
+                    ) : (
+                        <Button
+                            variant={"link"}
+                            size={"sm"}
+                            onClick={() => {
+                                setShowAllComments(false);
+                            }}
+                        >
+                            Hide comments
+                        </Button>
+                    )}
                 </div>
             )}
         </div>
     );
 }
 
-function BookReviewComment({ comment }: { comment: ReviewsWithCommentsAndProfiles[number]["comments"][number] }) {
+function BookReviewComment({
+    comment,
+}: {
+    comment: ReviewsWithCommentsAndProfiles[number]["comments"][number];
+}) {
     return (
-        <div className="ml-10 flex flex-col gap-2 bg-secondary/50 p-5 rounded-lg">
+        <div className="ml-10 flex flex-col gap-4 bg-secondary/50 p-5 rounded-lg">
             <div className="flex gap-2 items-center">
                 <Avatar
                     name={comment.userId.toString()}
@@ -253,10 +317,18 @@ function BookReviewComment({ comment }: { comment: ReviewsWithCommentsAndProfile
                     variant="beam"
                 />
                 <span className="text-sm font-bold font-serif">
-                    {comment.commenter.profile?.username || <span className="text-gray-500">Anonymous</span>}
+                    {comment.commenter.profile?.username || (
+                        <span className="text-gray-500">Anonymous</span>
+                    )}
                 </span>
             </div>
             <p>{comment.comment}</p>
+            {comment.updatedAt && (
+                <span className="text-xs text-gray-500">
+                    Last updated:&nbsp;
+                    {getHumanReadableDate(comment.updatedAt)}
+                </span>
+            )}
         </div>
     );
 }
