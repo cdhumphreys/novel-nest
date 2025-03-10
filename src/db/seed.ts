@@ -4,6 +4,7 @@ import { database as db, pg } from '@/db';
 import * as schema from "./schema";
 import type { database } from '@/db';
 import * as seeds from './seeds';
+import { fixPk } from './fix_pk';
 
 async function resetTable(db: database, table: Table) {
     return db.execute(
@@ -48,11 +49,20 @@ export async function seedTables() {
 
     console.log("\n==========Finished seeding tables==========\n");
 
+    // Fix the serialisation of the primary keys after seeding the tables
+    try {
+        await fixPk()
+        console.log("PKs fixed successfully!");
+    } catch (error) {
+        console.error("Error fixing PKs:", error);
+    }
+
     pg.end();
 }
 
 seedTables().then(() => {
     console.log("Tables seeded successfully!");
+
 }).catch((error) => {
     console.error("Error seeding tables:", error);
 });
