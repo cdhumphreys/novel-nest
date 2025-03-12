@@ -2,23 +2,27 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ImageOff, StarIcon } from "lucide-react";
+import { ImageOff, PencilIcon, StarIcon, TrashIcon } from "lucide-react";
 import Avatar from "boring-avatars";
 
-import { Book, Author, sessionsTable } from "@/db/schema";
+import { Book, Author } from "@/db/schema";
 import { ReviewsWithCommentsAndProfiles } from "@/data-access/reviews";
 
 import RatingStars from "@/components/rating-stars";
 import { Button } from "@/components/ui/button";
 import StickyBlock from "@/components/sticky-block";
+import { ReviewForm, EditReviewForm, DeleteReviewForm } from "./review-form";
+import { DeleteReviewCommentForm, EditReviewCommentForm, ReplyForm } from "./reply-form";
+import { FormDialog } from "./form-dialog";
 
 import { getHumanReadableDate } from "@/lib/utils";
 import { useState } from "react";
 import { useSession } from "@/hooks/use-session";
+import UserSignature from "./user-signature";
 
-function BookActions() {
+function BookActions({ bookId }: { bookId: number }) {
     const session = useSession();
-    console.log(session);
+    const [showReviewForm, setShowReviewForm] = useState(false);
     return (
         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
             {session?.user ? (
@@ -34,6 +38,7 @@ function BookActions() {
                         variant={"outline"}
                         size={"lg"}
                         className="sm:flex-1"
+                        onClick={() => setShowReviewForm(true)}
                     >
                         Leave a review
                     </Button>
@@ -43,6 +48,7 @@ function BookActions() {
                     <Link href="/login">Login to leave a review</Link>
                 </Button>
             )}
+            <FormDialog show={showReviewForm} setShow={setShowReviewForm} title="Leave a review" description="Leave a review for this book" children={<ReviewForm bookId={bookId} onClose={() => setShowReviewForm(false)} />} />
         </div>
     );
 }
@@ -121,7 +127,7 @@ function BookDetails({
                     </p>
                 </div>
             )}
-            <BookActions />
+            <BookActions bookId={book.id} />
         </StickyBlock>
     );
 }
@@ -141,7 +147,7 @@ function BookReviews({ reviews }: { reviews: ReviewsWithCommentsAndProfiles }) {
     const averageRating =
         reviews.length > 0
             ? reviews.reduce((acc, review) => acc + review.rating, 0) /
-              reviews.length
+            reviews.length
             : 0;
     return (
         <div className="flex flex-col gap-5">
@@ -212,34 +218,27 @@ function BookReview({
 }) {
     const [showAllComments, setShowAllComments] = useState(false);
     const session = useSession();
+    const [showEditForm, setShowEditForm] = useState(false);
+    const [showDeleteForm, setShowDeleteForm] = useState(false);
+    const [showReplyForm, setShowReplyForm] = useState(false);
     return (
         <div
             key={review.id}
             className="last:border-b-0 border-b border-primary/10 pb-5 last:pb-0"
         >
             <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-3">
-                    <Avatar
-                        name={review.userId.toString()}
-                        size={32}
-                        variant="beam"
-                    />
-                    <div className="flex w-full justify-between items-end gap-5">
-                        <div className="flex flex-col">
-                            <span className="text-lg font-bold font-serif">
-                                {review.reviewer.profile?.username}
-                            </span>
-                            <span className="text-sm text-gray-500">
-                                {getHumanReadableDate(review.createdAt)}
-                            </span>
-                        </div>
-                    </div>
-                </div>
+
+                <UserSignature username={review.reviewer.profile?.username || "Anonymous"}>
+                    <span className="text-xs text-gray-500">
+                        {getHumanReadableDate(review.createdAt)}
+                    </span>
+                </UserSignature>
+
                 <div className="rounded-lg bg-secondary p-4 flex flex-col gap-2">
                     <RatingStars rating={review.rating} size="sm" />
                     <div className="text-secondary-foreground relative flex flex-col gap-4 pr-16">
                         <p>{review.comment}</p>
-                        {review.updatedAt && (
+                        {review.updatedAt && (review.updatedAt.getTime() !== review.createdAt.getTime()) && (
                             <span className="text-xs text-gray-500">
                                 Last updated:&nbsp;
                                 {getHumanReadableDate(review.updatedAt)}
@@ -247,9 +246,23 @@ function BookReview({
                         )}
                         {session?.user?.id && (
                             <div className="absolute bottom-0 right-0">
-                                <Button variant={"link"} size={"sm"}>
-                                    Reply
-                                </Button>
+                                {review.userId !== session.user.id ? (
+                                    <Button variant={"link"} size={"sm"} onClick={() => setShowReplyForm(true)}>
+                                        Reply
+                                    </Button>
+                                ) : (
+                                    <div className="flex gap-1">
+                                        <Button variant={"default"} size={"icon"} className="w-8 h-8" onClick={() => setShowEditForm(true)}>
+                                            <PencilIcon />
+                                            <span className="sr-only">Edit</span>
+                                        </Button>
+                                        <Button variant={"destructive"} size={"icon"} className="w-8 h-8" onClick={() => setShowDeleteForm(true)}>
+                                            <TrashIcon />
+                                            <span className="sr-only">Delete</span>
+                                        </Button>
+
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
@@ -259,19 +272,19 @@ function BookReview({
                 <div className="mt-5 flex flex-col gap-2">
                     {showAllComments
                         ? review.comments.map((comment) => (
-                              <BookReviewComment
-                                  key={comment.id}
-                                  comment={comment}
-                              />
-                          ))
+                            <BookReviewComment
+                                key={comment.id}
+                                comment={comment}
+                            />
+                        ))
                         : review.comments
-                              .slice(0, 3)
-                              .map((comment) => (
-                                  <BookReviewComment
-                                      key={comment.id}
-                                      comment={comment}
-                                  />
-                              ))}
+                            .slice(0, 3)
+                            .map((comment) => (
+                                <BookReviewComment
+                                    key={comment.id}
+                                    comment={comment}
+                                />
+                            ))}
                 </div>
             )}
             {review.comments.length > 3 && (
@@ -299,6 +312,9 @@ function BookReview({
                     )}
                 </div>
             )}
+            <FormDialog show={showEditForm} setShow={setShowEditForm} title="Edit review" description="Edit your review" children={<EditReviewForm bookId={review.bookId} onClose={() => setShowEditForm(false)} rating={review.rating} comment={review.comment} />} />
+            <FormDialog show={showDeleteForm} setShow={setShowDeleteForm} title="Delete review" description="Are you sure you want to delete this review?" children={<DeleteReviewForm reviewId={review.id} onClose={() => setShowDeleteForm(false)} />} />
+            <FormDialog show={showReplyForm} setShow={setShowReplyForm} title="Reply to review" description={`Reply to: ${review.reviewer.profile?.username}'s review`} children={<ReplyForm review={review} onClose={() => setShowReplyForm(false)} />} />
         </div>
     );
 }
@@ -308,27 +324,56 @@ function BookReviewComment({
 }: {
     comment: ReviewsWithCommentsAndProfiles[number]["comments"][number];
 }) {
+    const session = useSession();
+    const [showReplyEditForm, setShowReplyEditForm] = useState(false);
+    const [showReplyDeleteForm, setShowReplyDeleteForm] = useState(false);
     return (
-        <div className="ml-10 flex flex-col gap-4 bg-secondary/50 p-5 rounded-lg">
-            <div className="flex gap-2 items-center">
-                <Avatar
-                    name={comment.userId.toString()}
-                    size={32}
-                    variant="beam"
-                />
-                <span className="text-sm font-bold font-serif">
-                    {comment.commenter.profile?.username || (
-                        <span className="text-gray-500">Anonymous</span>
-                    )}
-                </span>
+        <div className="ml-10 flex flex-col gap-4 bg-secondary/50 p-4 rounded-lg">
+            <div className="flex flex-col gap-2 relative">
+
+                <div className="flex gap-2 items-center">
+                    <Avatar
+                        name={comment.userId.toString()}
+                        size={32}
+                        variant="beam"
+                    />
+                    <div className="flex flex-col">
+                        <span className="text-lg font-bold font-serif">
+                            {comment.commenter.profile?.username || (
+                                <span className="text-gray-500">Anonymous</span>
+                            )}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                            {getHumanReadableDate(comment.createdAt)}
+                        </span>
+
+                    </div>
+                </div>
+                <p>{comment.comment}</p>
+                {comment.updatedAt && (
+                    <span className="text-xs text-gray-500">
+                        Last updated:&nbsp;
+                        {getHumanReadableDate(comment.updatedAt)}
+                    </span>
+                )}
+                {session?.user?.id && session.user.id === comment.userId && (
+                    <div className="absolute bottom-0 right-0">
+                        <div className="flex gap-1">
+                            <Button variant={"default"} size={"icon"} className="w-8 h-8" onClick={() => setShowReplyEditForm(true)}>
+                                <PencilIcon />
+                                <span className="sr-only">Edit</span>
+                            </Button>
+                            <Button variant={"destructive"} size={"icon"} className="w-8 h-8" onClick={() => setShowReplyDeleteForm(true)}>
+                                <TrashIcon />
+                                <span className="sr-only">Delete</span>
+                            </Button>
+
+                        </div>
+                    </div>
+                )}
             </div>
-            <p>{comment.comment}</p>
-            {comment.updatedAt && (
-                <span className="text-xs text-gray-500">
-                    Last updated:&nbsp;
-                    {getHumanReadableDate(comment.updatedAt)}
-                </span>
-            )}
+            <FormDialog show={showReplyEditForm} setShow={setShowReplyEditForm} title="Edit reply" description="Edit your reply" children={<EditReviewCommentForm reviewId={comment.reviewId} onClose={() => setShowReplyEditForm(false)} comment={comment.comment} />} />
+            <FormDialog show={showReplyDeleteForm} setShow={setShowReplyDeleteForm} title="Delete reply" description="Are you sure you want to delete this reply?" children={<DeleteReviewCommentForm reviewCommentId={comment.id} onClose={() => setShowReplyDeleteForm(false)} />} />
         </div>
     );
 }
