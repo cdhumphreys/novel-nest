@@ -252,11 +252,11 @@ function BookReview({
                                     </Button>
                                 ) : (
                                     <div className="flex gap-1">
-                                        <Button variant={"default"} size={"icon"} className="w-8 h-8" onClick={() => setShowEditForm(true)}>
+                                        <Button variant={"ghost"} size={"icon"} className="w-8 h-8" onClick={() => setShowEditForm(true)}>
                                             <PencilIcon />
                                             <span className="sr-only">Edit</span>
                                         </Button>
-                                        <Button variant={"destructive"} size={"icon"} className="w-8 h-8" onClick={() => setShowDeleteForm(true)}>
+                                        <Button variant={"destructive-ghost"} size={"icon"} className="w-8 h-8" onClick={() => setShowDeleteForm(true)}>
                                             <TrashIcon />
                                             <span className="sr-only">Delete</span>
                                         </Button>
@@ -359,11 +359,11 @@ function BookReviewComment({
                 {session?.user?.id && session.user.id === comment.userId && (
                     <div className="absolute bottom-0 right-0">
                         <div className="flex gap-1">
-                            <Button variant={"default"} size={"icon"} className="w-8 h-8" onClick={() => setShowReplyEditForm(true)}>
+                            <Button variant={"ghost"} size={"icon"} className="w-8 h-8" onClick={() => setShowReplyEditForm(true)}>
                                 <PencilIcon />
                                 <span className="sr-only">Edit</span>
                             </Button>
-                            <Button variant={"destructive"} size={"icon"} className="w-8 h-8" onClick={() => setShowReplyDeleteForm(true)}>
+                            <Button variant={"destructive-ghost"} size={"icon"} className="w-8 h-8" onClick={() => setShowReplyDeleteForm(true)}>
                                 <TrashIcon />
                                 <span className="sr-only">Delete</span>
                             </Button>
