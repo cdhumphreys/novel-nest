@@ -6,9 +6,10 @@ import { cookies } from "next/headers";
 import { cache } from "react";
 
 import { createSession, validateSessionToken, type SessionValidationResult } from "@/data-access/sessions";
-import type { SafeUser } from "@/db/schema";
+import type { Profile, SafeUser } from "@/db/schema";
 import { encodeBase32LowerCaseNoPadding } from "@oslojs/encoding";
 import { AuthenticationError, AuthorisationError } from "./errors";
+import { getProfileByUserId } from "@/data-access/profiles";
 
 export async function setSessionCookie(token: string, expiresAt: Date): Promise<void> {
     cookies().set('session', token, {
@@ -66,6 +67,14 @@ export const getCurrentUser = cache(async (): Promise<{ user: SafeUser, error: n
         return { error: { error: "AuthenticationError", message: 'User not authenticated' }, user: null }
     }
     return { user: user as SafeUser, error: null };
+});
+
+export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
+    const { user } = await getCurrentSession();
+    if (user === null) {
+        return null;
+    }
+    return await getProfileByUserId(user.id);
 });
 
 export async function generateSessionToken(): Promise<string> {

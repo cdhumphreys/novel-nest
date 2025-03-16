@@ -3,6 +3,7 @@ import {
     BookDescription,
     BookReviews,
     BookAuthor,
+    BookActions,
 } from "./components/book";
 import { getBookById } from "@/data-access/books";
 import { getAuthorById } from "@/data-access/authors";
@@ -11,6 +12,8 @@ import { getReviewsByBookIdWithCommentsAndProfiles } from "@/data-access/reviews
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
+import { getCurrentProfile } from "@/lib/sessions";
+import { getFavouritesByProfileId } from "@/data-access/profiles";
 function BookNotFound() {
     return (
         <div className="container pt-10 pb-20 flex flex-col gap-10 lg:grid lg:grid-cols-[400px_1fr] lg:gap-10">
@@ -37,6 +40,16 @@ export default async function BookPage({ params }: { params: { id: string } }) {
     const reviews = await getReviewsByBookIdWithCommentsAndProfiles(book.id);
     const author = await getAuthorById(book.authorId);
 
+    let isFavourite = false;
+
+    const profile = await getCurrentProfile();
+    if (profile) {
+        const favourites = await getFavouritesByProfileId(profile?.id);
+        isFavourite = favourites.some((favourite) => favourite.id === book.id);
+
+    }
+
+
     const rating =
         reviews.length > 0
             ? reviews.reduce((acc, review) => acc + review.rating, 0) /
@@ -51,7 +64,9 @@ export default async function BookPage({ params }: { params: { id: string } }) {
                         book={book}
                         author={author}
                         rating={rating}
-                    />
+                    >
+                        <BookActions bookId={book.id} isFavourite={isFavourite} />
+                    </BookDetails>
                 </div>
                 <div className="flex flex-col gap-10">
                     <BookDescription book={book} />

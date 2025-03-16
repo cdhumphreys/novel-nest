@@ -10,7 +10,6 @@ export function FormDialog({ show, setShow, title, description, children }: { sh
     return (
         <Dialog open={show} onOpenChange={setShow}>
             <DialogContent>
-
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                     <DialogDescription>

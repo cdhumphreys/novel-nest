@@ -145,18 +145,20 @@ export const bookRelationsTable = relations(booksTable, ({ one, many }) => ({
     }),
     reviews: many(reviewsTable),
     genres: many(booksToGenresJoinTable),
-    users: many(booksToUsersJoinTable)
+    users: many(booksToUsersJoinTable),
+    favouritedBy: many(booksToProfilesJoinTable)
 }));
 
 export const authorRelationsTable = relations(authorsTable, ({ one, many }) => ({
     books: many(booksTable),
 }));
 
-export const profileRelationsTable = relations(profilesTable, ({ one }) => ({
+export const profileRelationsTable = relations(profilesTable, ({ one, many }) => ({
     user: one(usersTable, {
         fields: [profilesTable.userId],
         references: [usersTable.id]
     }),
+    favourites: many(booksToProfilesJoinTable),
 }));
 
 
@@ -226,6 +228,24 @@ export const booksToUsersRelationsTable = relations(booksToUsersJoinTable, ({ on
     user: one(usersTable, {
         fields: [booksToUsersJoinTable.userId],
         references: [usersTable.id]
+    }),
+}));
+
+export const booksToProfilesJoinTable = pgTable('books_to_profiles', {
+    bookId: integer('book_id').notNull().references(() => booksTable.id, { onDelete: 'cascade' }),
+    profileId: integer('profile_id').notNull().references(() => profilesTable.id, { onDelete: 'cascade' }),
+}, (t) => ({
+    pk: primaryKey({ columns: [t.bookId, t.profileId] }),
+}));
+
+export const booksToProfilesRelationsTable = relations(booksToProfilesJoinTable, ({ one }) => ({
+    book: one(booksTable, {
+        fields: [booksToProfilesJoinTable.bookId],
+        references: [booksTable.id]
+    }),
+    profile: one(profilesTable, {
+        fields: [booksToProfilesJoinTable.profileId],
+        references: [profilesTable.id]
     }),
 }));
 

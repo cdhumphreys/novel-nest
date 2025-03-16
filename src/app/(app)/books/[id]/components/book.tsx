@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ImageOff, PencilIcon, StarIcon, TrashIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { HeartIcon, HeartOffIcon, ImageOff, PencilIcon, StarIcon, TrashIcon } from "lucide-react";
 import Avatar from "boring-avatars";
+import { useState } from "react";
 
 import { Book, Author } from "@/db/schema";
 import { ReviewsWithCommentsAndProfiles } from "@/data-access/reviews";
@@ -11,28 +13,54 @@ import { ReviewsWithCommentsAndProfiles } from "@/data-access/reviews";
 import RatingStars from "@/components/rating-stars";
 import { Button } from "@/components/ui/button";
 import StickyBlock from "@/components/sticky-block";
+
 import { ReviewForm, EditReviewForm, DeleteReviewForm } from "./review-form";
 import { DeleteReviewCommentForm, EditReviewCommentForm, ReplyForm } from "./reply-form";
 import { FormDialog } from "./form-dialog";
-
-import { getHumanReadableDate } from "@/lib/utils";
-import { useState } from "react";
-import { useSession } from "@/hooks/use-session";
 import UserSignature from "./user-signature";
 
-function BookActions({ bookId }: { bookId: number }) {
+import { getHumanReadableDate } from "@/lib/utils";
+import { useSession } from "@/hooks/use-session";
+import { toggleFavouritesAction } from "@/server/actions/profile";
+
+import { toast } from "sonner";
+
+export const INITIAL_VISIBLE_REVIEWS = 3;
+export const INITIAL_VISIBLE_COMMENTS = 3;
+
+function BookActions({ bookId, isFavourite }: { bookId: number, isFavourite: boolean }) {
     const session = useSession();
     const [showReviewForm, setShowReviewForm] = useState(false);
+    const router = useRouter();
+
+    async function handleToggleFavourites() {
+        console.log("add to favourites");
+        const result = await toggleFavouritesAction(bookId);
+        if (result.success) {
+            router.refresh();
+            toast.success(isFavourite ? "Removed from favourites" : "Added to favourites");
+        } else {
+            toast.error(result.errors?.root || "Failed to add to favourites", {
+                style: {
+                    background: "hsl(var(--destructive))",
+                    color: "hsl(var(--destructive-foreground))",
+                }
+            });
+        }
+    }
+
     return (
         <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
             {session?.user ? (
                 <>
                     <Button
-                        variant={"default"}
+                        variant={isFavourite ? "outline" : "default"}
                         size={"lg"}
                         className="sm:flex-1"
+                        onClick={handleToggleFavourites}
                     >
-                        Add to wishlist
+                        {isFavourite ? "Remove from favourites" : "Add to favourites"}
+                        {isFavourite ? <HeartOffIcon /> : <HeartIcon />}
                     </Button>
                     <Button
                         variant={"outline"}
@@ -86,10 +114,12 @@ function BookDetails({
     book,
     author,
     rating,
+    children,
 }: {
     book: Book;
     author?: Author;
     rating?: number;
+    children?: React.ReactNode;
 }) {
     return (
         <StickyBlock
@@ -127,7 +157,7 @@ function BookDetails({
                     </p>
                 </div>
             )}
-            <BookActions bookId={book.id} />
+            {children}
         </StickyBlock>
     );
 }
@@ -173,7 +203,7 @@ function BookReviews({ reviews }: { reviews: ReviewsWithCommentsAndProfiles }) {
                         ))
                     ) : (
                         reviews
-                            .slice(0, 3)
+                            .slice(0, INITIAL_VISIBLE_REVIEWS)
                             .map((review) => (
                                 <BookReview key={review.id} review={review} />
                             ))
@@ -182,7 +212,7 @@ function BookReviews({ reviews }: { reviews: ReviewsWithCommentsAndProfiles }) {
                     <div className="text-lg text-gray-500">No reviews yet</div>
                 )}
             </div>
-            {reviews.length > 3 && (
+            {reviews.length > INITIAL_VISIBLE_REVIEWS && (
                 <div className="py-2 flex justify-center mt-5">
                     {!showAllReviews ? (
                         <Button
@@ -218,6 +248,7 @@ function BookReview({
 }) {
     const [showAllComments, setShowAllComments] = useState(false);
     const session = useSession();
+
     const [showEditForm, setShowEditForm] = useState(false);
     const [showDeleteForm, setShowDeleteForm] = useState(false);
     const [showReplyForm, setShowReplyForm] = useState(false);
@@ -245,25 +276,7 @@ function BookReview({
                             </span>
                         )}
                         {session?.user?.id && (
-                            <div className="absolute bottom-0 right-0">
-                                {review.userId !== session.user.id ? (
-                                    <Button variant={"link"} size={"sm"} onClick={() => setShowReplyForm(true)}>
-                                        Reply
-                                    </Button>
-                                ) : (
-                                    <div className="flex gap-1">
-                                        <Button variant={"ghost"} size={"icon"} className="w-8 h-8" onClick={() => setShowEditForm(true)}>
-                                            <PencilIcon />
-                                            <span className="sr-only">Edit</span>
-                                        </Button>
-                                        <Button variant={"destructive-ghost"} size={"icon"} className="w-8 h-8" onClick={() => setShowDeleteForm(true)}>
-                                            <TrashIcon />
-                                            <span className="sr-only">Delete</span>
-                                        </Button>
-
-                                    </div>
-                                )}
-                            </div>
+                            <ReviewActions userIsReviewer={review.userId !== session.user.id} setShowReplyForm={setShowReplyForm} setShowEditForm={setShowEditForm} setShowDeleteForm={setShowDeleteForm} />
                         )}
                     </div>
                 </div>
@@ -278,7 +291,7 @@ function BookReview({
                             />
                         ))
                         : review.comments
-                            .slice(0, 3)
+                            .slice(0, INITIAL_VISIBLE_COMMENTS)
                             .map((comment) => (
                                 <BookReviewComment
                                     key={comment.id}
@@ -287,7 +300,7 @@ function BookReview({
                             ))}
                 </div>
             )}
-            {review.comments.length > 3 && (
+            {review.comments.length > INITIAL_VISIBLE_COMMENTS && (
                 <div className="py-2 flex justify-center mt-5 pl-10">
                     {!showAllComments ? (
                         <Button
@@ -312,11 +325,39 @@ function BookReview({
                     )}
                 </div>
             )}
-            <FormDialog show={showEditForm} setShow={setShowEditForm} title="Edit review" description="Edit your review" children={<EditReviewForm bookId={review.bookId} onClose={() => setShowEditForm(false)} rating={review.rating} comment={review.comment} />} />
-            <FormDialog show={showDeleteForm} setShow={setShowDeleteForm} title="Delete review" description="Are you sure you want to delete this review?" children={<DeleteReviewForm reviewId={review.id} onClose={() => setShowDeleteForm(false)} />} />
-            <FormDialog show={showReplyForm} setShow={setShowReplyForm} title="Reply to review" description={`Reply to: ${review.reviewer.profile?.username}'s review`} children={<ReplyForm review={review} onClose={() => setShowReplyForm(false)} />} />
+            <FormDialog show={showEditForm} setShow={setShowEditForm} title="Edit review" description="Edit your review">
+                <EditReviewForm bookId={review.bookId} onClose={() => setShowEditForm(false)} rating={review.rating} comment={review.comment} />
+            </FormDialog>
+            <FormDialog show={showDeleteForm} setShow={setShowDeleteForm} title="Delete review" description="Are you sure you want to delete this review?">
+                <DeleteReviewForm reviewId={review.id} onClose={() => setShowDeleteForm(false)} />
+            </FormDialog>
+            <FormDialog show={showReplyForm} setShow={setShowReplyForm} title="Reply to review" description={`Reply to: ${review.reviewer.profile?.username}'s review`}>
+                <ReplyForm review={review} onClose={() => setShowReplyForm(false)} />
+            </FormDialog>
         </div>
     );
+}
+
+function ReviewActions({ userIsReviewer, setShowReplyForm, setShowEditForm, setShowDeleteForm }: { userIsReviewer: boolean, setShowReplyForm: (show: boolean) => void, setShowEditForm: (show: boolean) => void, setShowDeleteForm: (show: boolean) => void }) {
+    return (<div className="absolute bottom-0 right-0">
+        {userIsReviewer ? (
+            <Button variant={"link"} size={"sm"} onClick={() => setShowReplyForm(true)}>
+                Reply
+            </Button>
+        ) : (
+            <div className="flex gap-1">
+                <Button variant={"ghost"} size={"icon"} className="w-8 h-8" onClick={() => setShowEditForm(true)}>
+                    <PencilIcon />
+                    <span className="sr-only">Edit</span>
+                </Button>
+                <Button variant={"destructive-ghost"} size={"icon"} className="w-8 h-8" onClick={() => setShowDeleteForm(true)}>
+                    <TrashIcon />
+                    <span className="sr-only">Delete</span>
+                </Button>
+
+            </div>
+        )}
+    </div>)
 }
 
 function BookReviewComment({
@@ -357,25 +398,31 @@ function BookReviewComment({
                     </span>
                 )}
                 {session?.user?.id && session.user.id === comment.userId && (
-                    <div className="absolute bottom-0 right-0">
-                        <div className="flex gap-1">
-                            <Button variant={"ghost"} size={"icon"} className="w-8 h-8" onClick={() => setShowReplyEditForm(true)}>
-                                <PencilIcon />
-                                <span className="sr-only">Edit</span>
-                            </Button>
-                            <Button variant={"destructive-ghost"} size={"icon"} className="w-8 h-8" onClick={() => setShowReplyDeleteForm(true)}>
-                                <TrashIcon />
-                                <span className="sr-only">Delete</span>
-                            </Button>
-
-                        </div>
-                    </div>
+                    <ReviewCommentActions setShowReplyEditForm={setShowReplyEditForm} setShowReplyDeleteForm={setShowReplyDeleteForm} />
                 )}
             </div>
             <FormDialog show={showReplyEditForm} setShow={setShowReplyEditForm} title="Edit reply" description="Edit your reply" children={<EditReviewCommentForm reviewId={comment.reviewId} onClose={() => setShowReplyEditForm(false)} comment={comment.comment} />} />
             <FormDialog show={showReplyDeleteForm} setShow={setShowReplyDeleteForm} title="Delete reply" description="Are you sure you want to delete this reply?" children={<DeleteReviewCommentForm reviewCommentId={comment.id} onClose={() => setShowReplyDeleteForm(false)} />} />
         </div>
     );
+}
+
+function ReviewCommentActions({ setShowReplyEditForm, setShowReplyDeleteForm }: { setShowReplyEditForm: (show: boolean) => void, setShowReplyDeleteForm: (show: boolean) => void }) {
+    return (
+        <div className="absolute bottom-0 right-0">
+            <div className="flex gap-1">
+                <Button variant={"ghost"} size={"icon"} className="w-8 h-8" onClick={() => setShowReplyEditForm(true)}>
+                    <PencilIcon />
+                    <span className="sr-only">Edit</span>
+                </Button>
+                <Button variant={"destructive-ghost"} size={"icon"} className="w-8 h-8" onClick={() => setShowReplyDeleteForm(true)}>
+                    <TrashIcon />
+                    <span className="sr-only">Delete</span>
+                </Button>
+
+            </div>
+        </div>
+    )
 }
 
 function BookAuthor({ author }: { author: Author }) {
@@ -396,4 +443,4 @@ function BookAuthor({ author }: { author: Author }) {
     );
 }
 
-export { BookDetails, BookDescription, BookReviews, BookAuthor };
+export { BookDetails, BookDescription, BookReviews, BookAuthor, BookActions };
